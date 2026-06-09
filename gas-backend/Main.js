@@ -50,6 +50,9 @@ function doGet(e) {
       case "get_replenishment":
         return getReplenishmentList();
 
+      case "get_kategori":
+        return getKategori();
+
       case "get_logs":
         return respondSuccess(getAllRecords(CONFIG.SHEETS.LOG_AKTIVITAS));
 
@@ -87,6 +90,15 @@ function doPost(e) {
 
       case "create_replenishment":
         return createReplenishment(payload);
+
+      case "create_kategori":
+        return createKategori(payload);
+
+      case "update_kategori":
+        return updateKategori(payload);
+
+      case "delete_kategori":
+        return deleteKategori(payload);
 
       default:
         return respondError("Action POST tidak ditemukan", "INVALID_ACTION");

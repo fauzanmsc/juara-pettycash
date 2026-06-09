@@ -54,10 +54,10 @@ export default function RegisterPage() {
             
             {/* Avatar Upload */}
             <div className="flex flex-col items-center justify-center space-y-4 mb-6">
-              <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
-                <AvatarImage src={avatar || ""} />
-                <AvatarFallback className="bg-primary/10 text-primary text-2xl font-bold">
-                  JP
+              <Avatar className="w-24 h-24 border-4 border-white shadow-lg bg-gradient-to-tr from-blue-600 via-indigo-500 to-cyan-400">
+                <AvatarImage src={avatar || "/images/default-avatar.png"} className="object-cover object-top" />
+                <AvatarFallback className="bg-transparent text-white text-2xl font-bold">
+                  {name ? name.substring(0, 2).toUpperCase() : "BS"}
                 </AvatarFallback>
               </Avatar>
               <div>

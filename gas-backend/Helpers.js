@@ -24,12 +24,19 @@ function respondError(message, code = "INTERNAL_ERROR") {
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
-// Generate UUID
-function generateUUID() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
+// Generate Simple ID (Format: PREFIX-MMYY-XXX)
+function generateUUID(prefix = "ID") {
+  const date = new Date();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const yy = String(date.getFullYear()).slice(-2);
+  
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let randomStr = '';
+  for (let i = 0; i < 3; i++) {
+    randomStr += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  
+  return prefix + '-' + mm + yy + '-' + randomStr;
 }
 
 // Format Tanggal
@@ -88,10 +95,51 @@ function insertRecord(sheetName, recordObj) {
   return true;
 }
 
+// Update record by Key
+function updateRecord(sheetName, keyField, keyValue, updateObj) {
+  const sheet = getSheet(sheetName);
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0];
+  const keyIndex = headers.indexOf(keyField);
+  
+  if (keyIndex === -1) return false;
+  
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][keyIndex] === keyValue) {
+      for (const [key, value] of Object.entries(updateObj)) {
+        const colIndex = headers.indexOf(key);
+        if (colIndex !== -1) {
+          sheet.getRange(i + 1, colIndex + 1).setValue(value);
+        }
+      }
+      return true;
+    }
+  }
+  return false;
+}
+
+// Delete record by Key
+function deleteRecord(sheetName, keyField, keyValue) {
+  const sheet = getSheet(sheetName);
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0];
+  const keyIndex = headers.indexOf(keyField);
+  
+  if (keyIndex === -1) return false;
+  
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][keyIndex] === keyValue) {
+      sheet.deleteRow(i + 1);
+      return true;
+    }
+  }
+  return false;
+}
+
 // Audit Log Helper
 function logActivity(userId, userName, modul, aktivitas, keterangan, ipAddress = "0.0.0.0") {
   const logRecord = {
-    "ID_Log": generateUUID(),
+    "ID_Log": generateUUID("LOG"),
     "ID_Pengguna": userId,
     "Nama_Pengguna": userName,
     "Modul": modul,

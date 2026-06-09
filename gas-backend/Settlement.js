@@ -20,7 +20,7 @@ function createSettlement(payload) {
     const todayRecords = data.filter(p => p.Nomor_Settlement && p.Nomor_Settlement.startsWith(todayStr));
     const nextNum = (todayRecords.length + 1).toString().padStart(3, '0');
     const noSettlement = `${todayStr}-${nextNum}`;
-    const idPj = generateUUID();
+    const idPj = generateUUID("STL");
 
     const record = {
       "ID_PJ": idPj,
@@ -39,7 +39,7 @@ function createSettlement(payload) {
     // Insert detail settlement
     details.forEach(det => {
       insertRecord(CONFIG.SHEETS.DETAIL_SETTLEMENT, {
-        "ID_Detail": generateUUID(),
+        "ID_Detail": generateUUID("DTL"),
         "ID_PJ": idPj,
         "Tanggal": new Date().toISOString().split('T')[0],
         "ID_Kategori": det.idKategori,
@@ -85,7 +85,7 @@ function createReplenishment(payload) {
     const saldoSaatIni = saldoData.length > 0 ? saldoData[saldoData.length - 1].Saldo_Akhir : 0;
 
     const record = {
-      "ID_Replenishment": generateUUID(),
+      "ID_Replenishment": generateUUID("RPL"),
       "Nomor_Replenishment": noRep,
       "Tanggal_Pengajuan": new Date().toISOString().split('T')[0],
       "Saldo_Saat_Ini": saldoSaatIni,

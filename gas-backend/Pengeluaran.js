@@ -28,7 +28,7 @@ function createPengeluaran(payload) {
     const noTransaksi = `${todayStr}-${nextNum}`;
 
     const record = {
-      "ID_Pengeluaran": generateUUID(),
+      "ID_Pengeluaran": generateUUID("OUT"),
       "Nomor_Transaksi": noTransaksi,
       "Tanggal_Transaksi": new Date().toISOString().split('T')[0],
       "ID_Kategori": categoryId,

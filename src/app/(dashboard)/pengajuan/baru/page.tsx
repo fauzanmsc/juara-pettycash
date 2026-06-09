@@ -41,11 +41,11 @@ export default function BaruPengajuanPage() {
 
       const res = await fetchGAS('create_pengajuan', 'POST', payload);
       
-      if (res.status === 'success') {
+      if (res.success) {
         router.push("/pengajuan");
         router.refresh();
       } else {
-        alert("Gagal membuat pengajuan: " + res.message);
+        alert("Gagal membuat pengajuan: " + (res.message || res.error?.message || JSON.stringify(res)));
       }
     } catch (error) {
       alert("Terjadi kesalahan saat menghubungi server.");

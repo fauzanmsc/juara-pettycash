@@ -13,16 +13,9 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useMemo } from "react";
 
-const trendData = [
-  { name: "Jan", uv: 55000000 },
-  { name: "Feb", uv: 60000000 },
-  { name: "Mar", uv: 75000000 },
-  { name: "Apr", uv: 50000000 },
-  { name: "Mei", uv: 70000000 },
-  { name: "Jun", uv: 52000000 },
-];
+
+import { useMemo, useState } from "react";
 
 const COLORS = ["#1D4ED8", "#22C55E", "#FBBF24", "#A855F7", "#F43F5E", "#06B6D4", "#94A3B8"];
 
@@ -30,9 +23,41 @@ const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(amount);
 };
 
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white/95 dark:bg-[#151921]/95 backdrop-blur-xl border border-slate-200/60 dark:border-slate-800/80 p-3 rounded-2xl shadow-xl dark:shadow-2xl z-50 min-w-[140px]">
+        <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold mb-1.5 uppercase tracking-wider">{label}</p>
+        <p className="text-blue-600 dark:text-blue-400 font-extrabold text-sm">
+          {formatCurrency(payload[0].value)}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+const CustomPieTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white/95 dark:bg-[#151921]/95 backdrop-blur-xl border border-slate-200/60 dark:border-slate-800/80 p-3 rounded-2xl shadow-xl dark:shadow-2xl z-50 min-w-[150px] flex items-center gap-3">
+        <div className="w-3.5 h-3.5 rounded-full shadow-sm" style={{ backgroundColor: payload[0].payload.fill }} />
+        <div className="flex flex-col">
+          <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold mb-0.5 leading-none">{payload[0].name}</p>
+          <p className="text-slate-900 dark:text-white font-extrabold text-sm leading-none mt-1">
+            {formatCurrency(payload[0].value)}
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function DashboardPage() {
   const { data: session } = useSession();
   const user = session?.user as any;
+  const [trendFilter, setTrendFilter] = useState("bulan");
 
   // Fetch Stats
   const { data: statsResponse, isLoading: statsLoading } = useQuery({
@@ -68,6 +93,85 @@ export default function DashboardPage() {
       color: COLORS[idx % COLORS.length]
     }));
   }, [chartResponse]);
+
+  const processedTrendData = useMemo(() => {
+    const rawTrend = chartResponse?.data?.raw_trend || [];
+    
+    // Default dummy data if backend has no data yet to keep UI looking good
+    if (rawTrend.length === 0) {
+      if (trendFilter === "minggu") {
+        return [
+          { name: "Mg 1", uv: 12000000 },
+          { name: "Mg 2", uv: 18000000 },
+          { name: "Mg 3", uv: 15000000 },
+          { name: "Mg 4", uv: 19000000 },
+        ];
+      }
+      return [
+        { name: "Jan", uv: 55000000 },
+        { name: "Feb", uv: 60000000 },
+        { name: "Mar", uv: 75000000 },
+        { name: "Apr", uv: 50000000 },
+        { name: "Mei", uv: 70000000 },
+        { name: "Jun", uv: 52000000 },
+      ];
+    }
+
+    if (trendFilter === "bulan") {
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+      const today = new Date();
+      const last6Months = [];
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+        last6Months.push({
+          name: monthNames[d.getMonth()],
+          month: d.getMonth(),
+          year: d.getFullYear(),
+          uv: 0
+        });
+      }
+
+      rawTrend.forEach((trx: any) => {
+        const d = new Date(trx.date);
+        const match = last6Months.find(m => m.month === d.getMonth() && m.year === d.getFullYear());
+        if (match) {
+          match.uv += trx.amount;
+        }
+      });
+
+      return last6Months;
+    } else {
+      const last4Weeks = [];
+      const today = new Date();
+      const dayOfWeek = today.getDay() || 7; 
+      
+      for (let i = 3; i >= 0; i--) {
+        const endOfWeek = new Date(today.getTime());
+        endOfWeek.setDate(today.getDate() + (7 - dayOfWeek) - (i * 7));
+        endOfWeek.setHours(23, 59, 59, 999);
+        const startOfWeek = new Date(endOfWeek.getTime());
+        startOfWeek.setDate(endOfWeek.getDate() - 6);
+        startOfWeek.setHours(0, 0, 0, 0);
+        
+        last4Weeks.push({
+          name: `Mg ${4-i}`,
+          start: startOfWeek,
+          end: endOfWeek,
+          uv: 0
+        });
+      }
+
+      rawTrend.forEach((trx: any) => {
+        const d = new Date(trx.date);
+        const match = last4Weeks.find(w => d >= w.start && d <= w.end);
+        if (match) {
+          match.uv += trx.amount;
+        }
+      });
+
+      return last4Weeks;
+    }
+  }, [chartResponse, trendFilter]);
 
   const recentTransactions = transactionsResponse?.data || [];
 
@@ -196,7 +300,7 @@ export default function DashboardPage() {
           <CardContent className="p-6">
             <div className="flex justify-between items-center mb-8">
               <h3 className="font-bold text-sm text-slate-800 dark:text-slate-100">Trend Pengeluaran</h3>
-              <Select defaultValue="bulan">
+              <Select value={trendFilter} onValueChange={setTrendFilter}>
                 <SelectTrigger className="w-[110px] h-8 text-xs border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
                   <SelectValue placeholder="Per Bulan" />
                 </SelectTrigger>
@@ -208,13 +312,13 @@ export default function DashboardPage() {
             </div>
             <div className="h-[240px] w-full mt-4">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={trendData} margin={{ top: 0, right: 0, left: -25, bottom: 0 }} barSize={28}>
+                <BarChart data={processedTrendData} margin={{ top: 0, right: 0, left: -25, bottom: 0 }} barSize={28}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" opacity={0.5} />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748B' }} dy={10} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748B' }} tickFormatter={(val) => `${val/1000000} jt`} />
                   <RechartsTooltip 
                     cursor={{ fill: 'rgba(29, 78, 216, 0.05)' }}
-                    contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} 
+                    content={<CustomTooltip />}
                   />
                   <Bar dataKey="uv" fill="url(#colorUv)" radius={[6, 6, 0, 0]} />
                   <defs>
@@ -260,8 +364,7 @@ export default function DashboardPage() {
                           ))}
                         </Pie>
                         <RechartsTooltip 
-                          contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                          formatter={(value) => [formatCurrency(Number(value)), 'Total']}
+                          content={<CustomPieTooltip />}
                         />
                       </PieChart>
                     </ResponsiveContainer>

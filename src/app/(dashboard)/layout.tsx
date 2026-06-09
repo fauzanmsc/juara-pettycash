@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from "@/components/ui/dropdown-menu";
-import { LayoutDashboard, Receipt, FileText, RefreshCw, CheckSquare, Settings, LogOut, Menu, Bell, Search, History, HelpCircle, Wallet } from "lucide-react";
+import { LayoutDashboard, Receipt, FileText, RefreshCw, CheckSquare, Settings, LogOut, Menu, Bell, Search, History, HelpCircle, Wallet, Tags } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -23,6 +23,7 @@ const menuItems = [
 ];
 
 const secondaryMenuItems = [
+  { icon: Tags, label: "Master Kategori", href: "/master/kategori" },
   { icon: History, label: "Audit Trail", href: "/audit" },
   { icon: Settings, label: "Pengaturan", href: "/pengaturan" },
 ];
@@ -125,23 +126,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* User Profile in Sidebar Bottom */}
-        <div className="p-3 m-3 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-800/40 dark:to-slate-900/40 border border-slate-200/60 dark:border-slate-700/50 hover:shadow-md hover:border-blue-500/30 dark:hover:border-blue-400/30 transition-all duration-300 group cursor-pointer relative overflow-hidden">
+        <div className={cn(
+          "rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-800/40 dark:to-slate-900/40 border border-slate-200/60 dark:border-slate-700/50 hover:shadow-md hover:border-blue-500/30 dark:hover:border-blue-400/30 transition-all duration-300 group cursor-pointer relative overflow-hidden",
+          sidebarOpen ? "p-3 m-3" : "p-1.5 mx-auto my-4 w-12 flex justify-center items-center"
+        )}>
           {/* Subtle glow effect on hover */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/5 to-purple-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="flex items-center gap-3 outline-none relative z-10">
-                <div className="relative">
-                  <Avatar className="h-10 w-10 ring-2 ring-white dark:ring-[#151921] shadow-sm group-hover:scale-105 transition-transform duration-300">
-                    <AvatarFallback className="bg-gradient-to-tr from-blue-600 via-indigo-500 to-cyan-400 text-white font-bold text-sm shadow-inner">
+              <div className={cn("flex items-center outline-none relative z-10 w-full", sidebarOpen ? "gap-3" : "justify-center")}>
+                <div className="relative shrink-0 flex">
+                  <Avatar className={cn(
+                    "ring-2 ring-white dark:ring-[#151921] shadow-sm group-hover:scale-105 transition-transform duration-300 bg-gradient-to-tr from-blue-600 via-indigo-500 to-cyan-400",
+                    sidebarOpen ? "h-10 w-10" : "h-9 w-9"
+                  )}>
+                    <AvatarImage src="/images/default-avatar.png" className="object-cover object-top" />
+                    <AvatarFallback className="bg-transparent text-white font-bold text-sm shadow-inner">
                       {user?.name?.substring(0, 2).toUpperCase() || 'BS'}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-[#151921] rounded-full animate-pulse-soft"></div>
+                  <div className="absolute -bottom-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500 border-2 border-white dark:border-[#151921]"></span>
+                  </div>
                 </div>
                 {sidebarOpen && (
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 text-left">
                     <p className="text-sm font-bold truncate text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{user?.name}</p>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate font-medium uppercase tracking-wider">{user?.role || "Admin Finance"}</p>
                   </div>
@@ -150,8 +161,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" sideOffset={12} className="w-64 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] bg-white/95 dark:bg-[#151921]/95 backdrop-blur-xl p-2 animate-in slide-in-from-bottom-2 fade-in duration-200">
               <div className="px-3 py-3 mb-2 flex items-center gap-3 bg-slate-50/50 dark:bg-slate-800/30 rounded-xl">
-                <Avatar className="h-10 w-10 shadow-sm border border-slate-200/50 dark:border-slate-700/50">
-                  <AvatarFallback className="bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold">
+                <Avatar className="h-10 w-10 shadow-sm border border-slate-200/50 dark:border-slate-700/50 bg-gradient-to-tr from-blue-600 to-indigo-500">
+                  <AvatarImage src="/images/default-avatar.png" className="object-cover object-top" />
+                  <AvatarFallback className="bg-transparent text-white font-bold">
                      {user?.name?.substring(0, 2).toUpperCase() || 'BS'}
                   </AvatarFallback>
                 </Avatar>
@@ -200,8 +212,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 8
               </span>
             </div>
-            <Avatar className="h-8 w-8 cursor-pointer bg-green-600 text-white flex items-center justify-center font-bold text-xs" onClick={() => signOut()}>
-              <AvatarFallback className="bg-green-600 text-white border border-white">
+            <Avatar className="h-8 w-8 cursor-pointer bg-gradient-to-tr from-blue-600 to-indigo-500 text-white shadow-sm ring-1 ring-white/20" onClick={() => signOut()}>
+              <AvatarImage src="/images/default-avatar.png" className="object-cover object-top" />
+              <AvatarFallback className="bg-transparent text-white font-bold text-xs">
                 {user?.name?.substring(0, 2).toUpperCase() || 'BS'}
               </AvatarFallback>
             </Avatar>
@@ -247,15 +260,53 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
             </div>
 
-            <div className="relative cursor-pointer text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors group flex items-center justify-center">
-              <Bell className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold flex items-center justify-center rounded-full border-2 border-white dark:border-[#151921] group-hover:animate-bounce">
-                8
-              </span>
-              <div className="absolute -bottom-9 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900 text-[10px] font-bold px-2.5 py-1 rounded-md shadow-md whitespace-nowrap z-50">
-                Notifikasi
-              </div>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="relative cursor-pointer text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors group flex items-center justify-center outline-none">
+                  <Bell className="w-5 h-5" />
+                  <span className="absolute -top-1 -right-1.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold flex items-center justify-center rounded-full border-2 border-white dark:border-[#151921] group-hover:animate-bounce">
+                    8
+                  </span>
+                  <div className="absolute -bottom-9 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900 text-[10px] font-bold px-2.5 py-1 rounded-md shadow-md whitespace-nowrap z-50">
+                    Notifikasi
+                  </div>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" sideOffset={12} className="w-80 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] bg-white/95 dark:bg-[#151921]/95 backdrop-blur-xl p-0 animate-in slide-in-from-top-2 fade-in duration-200 overflow-hidden">
+                <div className="p-4 border-b border-slate-100 dark:border-slate-800/60 flex items-center justify-between">
+                  <h3 className="font-bold text-slate-800 dark:text-slate-200">Notifikasi</h3>
+                  <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold cursor-pointer hover:underline">Tandai semua dibaca</span>
+                </div>
+                <div className="max-h-[320px] overflow-y-auto overflow-x-hidden scrollbar-hide">
+                  <div className="p-4 border-b border-slate-50 dark:border-slate-800/30 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors relative">
+                    <div className="w-2 h-2 rounded-full bg-blue-500 absolute left-2 top-6"></div>
+                    <div className="pl-3">
+                      <p className="text-sm text-slate-800 dark:text-slate-200 font-bold">Pengajuan #REQ-002 Disetujui</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Pengajuan dana operasional bulanan telah disetujui oleh Direktur.</p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 font-medium flex items-center gap-1"><History className="w-3 h-3" /> 10 menit yang lalu</p>
+                    </div>
+                  </div>
+                  <div className="p-4 border-b border-slate-50 dark:border-slate-800/30 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors relative">
+                    <div className="w-2 h-2 rounded-full bg-blue-500 absolute left-2 top-6"></div>
+                    <div className="pl-3">
+                      <p className="text-sm text-slate-800 dark:text-slate-200 font-bold">Pengeluaran Baru Tercatat</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Fauzan (Admin Finance) mencatat pengeluaran Konsumsi Rp 320.000.</p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 font-medium flex items-center gap-1"><History className="w-3 h-3" /> 1 jam yang lalu</p>
+                    </div>
+                  </div>
+                  <div className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors relative">
+                    <div className="pl-3">
+                      <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">Settlement Selesai</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Laporan settlement bulan Mei telah divalidasi oleh Finance.</p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 font-medium flex items-center gap-1"><History className="w-3 h-3" /> Kemarin, 14:30</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-3 bg-slate-50 dark:bg-slate-900/50 text-center border-t border-slate-100 dark:border-slate-800/60 cursor-pointer group">
+                  <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Lihat Semua Notifikasi</span>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
             
             <div className="relative cursor-pointer text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors group flex items-center justify-center">
               <HelpCircle className="w-5 h-5" />
@@ -278,8 +329,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" sideOffset={12} className="w-56 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] bg-white/95 dark:bg-[#151921]/95 backdrop-blur-xl p-2 animate-in slide-in-from-top-2 fade-in duration-200">
-                <DropdownMenuLabel className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-3 py-2">Pilih Workspace</DropdownMenuLabel>
                 <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-3 py-2">Pilih Workspace</DropdownMenuLabel>
                   <DropdownMenuItem className="py-2.5 px-3 rounded-xl cursor-pointer bg-blue-50/50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-semibold mb-1 focus:bg-blue-50 dark:focus:bg-blue-900/30 focus:text-blue-700 dark:focus:text-blue-400">
                     <span className="mr-2">🏢</span> JEF GROUP ID
                     <CheckSquare className="ml-auto h-4 w-4 text-blue-600" />

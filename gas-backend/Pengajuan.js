@@ -43,7 +43,7 @@ function createPengajuan(payload) {
     }
 
     const record = {
-      "ID_Pengajuan": generateUUID(),
+      "ID_Pengajuan": generateUUID("REQ"),
       "Nomor_Pengajuan": noPengajuan,
       "Tanggal_Pengajuan": new Date().toISOString().split('T')[0],
       "ID_Pemohon": userId,

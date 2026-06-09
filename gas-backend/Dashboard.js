@@ -78,8 +78,17 @@ function getChartData() {
       value: summaryKategori[k]
     }));
 
+    // Data mentah untuk trend (agar frontend bisa filter Mingguan/Bulanan)
+    const rawTrend = pengeluaranData
+      .filter(exp => exp.Status !== 'Rejected' && exp.Status !== 'Ditolak')
+      .map(exp => ({
+        date: exp.Tanggal_Transaksi,
+        amount: Number(exp.Nominal)
+      }));
+
     return respondSuccess({
-      kategori: categoryChart
+      kategori: categoryChart,
+      raw_trend: rawTrend
     });
 
   } catch (error) {
