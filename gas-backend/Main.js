@@ -44,6 +44,15 @@ function doGet(e) {
       case "get_pengeluaran":
         return getPengeluaranList();
 
+      case "get_settlement":
+        return getSettlementList();
+
+      case "get_replenishment":
+        return getReplenishmentList();
+
+      case "get_logs":
+        return respondSuccess(getAllRecords(CONFIG.SHEETS.LOG_AKTIVITAS));
+
       default:
         return respondError("Action GET tidak ditemukan", "INVALID_ACTION");
     }

@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Providers from "./providers";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -19,9 +20,11 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased bg-slate-50 dark:bg-[#0D0F14]`}>
-        <Providers>
-          {children}
-        </Providers>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+          <Providers>
+            {children}
+          </Providers>
+        </ThemeProvider>
       </body>
     </html>
   );

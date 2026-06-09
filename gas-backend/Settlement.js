@@ -56,6 +56,15 @@ function createSettlement(payload) {
   }
 }
 
+function getSettlementList() {
+  try {
+    const data = getAllRecords(CONFIG.SHEETS.SETTLEMENT);
+    return respondSuccess(data);
+  } catch (error) {
+    return respondError(error.message, "GET_SETTLEMENT_ERROR");
+  }
+}
+
 function createReplenishment(payload) {
   try {
     const { userId, nominalPengisian, alasan } = payload;
@@ -92,5 +101,14 @@ function createReplenishment(payload) {
     return respondSuccess(record, "Replenishment berhasil diajukan");
   } catch (error) {
     return respondError(error.message, "CREATE_REPLENISHMENT_ERROR");
+  }
+}
+
+function getReplenishmentList() {
+  try {
+    const data = getAllRecords(CONFIG.SHEETS.REPLENISHMENT);
+    return respondSuccess(data);
+  } catch (error) {
+    return respondError(error.message, "GET_REPLENISHMENT_ERROR");
   }
 }
