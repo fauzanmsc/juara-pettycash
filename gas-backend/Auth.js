@@ -11,7 +11,7 @@ function validateUser(email, password) {
     return respondError("Email tidak terdaftar atau tidak aktif", "UNAUTHORIZED");
   }
 
-  if (user.Password !== password) {
+  if (String(user.Password) !== String(password)) {
     return respondError("Password salah", "UNAUTHORIZED");
   }
 
