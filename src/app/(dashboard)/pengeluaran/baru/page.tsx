@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, useRef, type ChangeEvent, type FormEvent } from "react";
 import { useSession } from "next-auth/react";
 import { fetchGAS } from "@/lib/api";
 import { Card } from "@/components/ui/card";
@@ -26,9 +26,9 @@ export default function BaruPengeluaranPage() {
   });
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const f = e.target.files[0];
       if (f.size > 5 * 1024 * 1024) {
@@ -46,7 +46,7 @@ export default function BaruPengeluaranPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!user) return alert("Anda harus login untuk mencatat pengeluaran.");
 
