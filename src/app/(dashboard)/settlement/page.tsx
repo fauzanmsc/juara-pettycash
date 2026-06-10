@@ -25,7 +25,7 @@ export default function SettlementPage() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-[#151921] p-6 rounded-2xl border border-slate-200 dark:border-slate-800/60 shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-white/5 dark:backdrop-blur-xl dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] p-6 rounded-2xl border border-slate-200  shadow-sm">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
             <CheckSquare className="w-6 h-6 text-orange-500" />
@@ -35,11 +35,11 @@ export default function SettlementPage() {
         </div>
       </div>
 
-      <Card className="bg-white dark:bg-[#151921] border-slate-200 dark:border-slate-800/60 soft-shadow rounded-2xl overflow-hidden">
+      <Card className="bg-white dark:bg-white/5 dark:backdrop-blur-xl dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] border-slate-200  soft-shadow rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
-            <TableHeader className="bg-slate-50/50 dark:bg-[#0D0F14]/50">
-              <TableRow className="border-b border-slate-100 dark:border-slate-800/60">
+            <TableHeader className="bg-slate-50/50 dark:bg-[#070D07]/50">
+              <TableRow className="border-b border-slate-100 dark:border-white/5">
                 <TableHead className="font-semibold text-slate-600 dark:text-slate-400 py-4 px-5">ID Settlement</TableHead>
                 <TableHead className="font-semibold text-slate-600 dark:text-slate-400">Ref. Pengajuan</TableHead>
                 <TableHead className="font-semibold text-slate-600 dark:text-slate-400 text-right">Dana Diberikan</TableHead>
@@ -66,7 +66,7 @@ export default function SettlementPage() {
                 ))
               ) : settlementData.length > 0 ? (
                 settlementData.map((row: any) => (
-                  <TableRow key={row.ID_PJ || row.Nomor_Settlement} className="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors group">
+                  <TableRow key={row.ID_PJ || row.Nomor_Settlement} className="border-b border-slate-100 dark:border-white/5 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors group">
                     <TableCell className="font-medium text-slate-900 dark:text-white py-4 px-5">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-lg bg-orange-50 dark:bg-orange-500/10 text-orange-500 flex items-center justify-center">

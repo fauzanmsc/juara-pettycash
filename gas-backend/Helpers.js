@@ -150,3 +150,37 @@ function logActivity(userId, userName, modul, aktivitas, keterangan, ipAddress =
   };
   insertRecord(CONFIG.SHEETS.LOG_AKTIVITAS, logRecord);
 }
+
+// Upload File to Google Drive
+function uploadFileToDrive(base64Data, filename, mimeType) {
+  try {
+    const folderId = CONFIG.DRIVE_FOLDER_ID;
+    if (!folderId || folderId === "GANTI_DENGAN_FOLDER_ID_DRIVE_ANDA") return null;
+    
+    const folder = DriveApp.getFolderById(folderId);
+    
+    // Folderring by Year-Month
+    const date = new Date();
+    const yearMonth = Utilities.formatDate(date, Session.getScriptTimeZone(), "yyyy-MM");
+    
+    let targetFolder;
+    const subFolders = folder.getFoldersByName(yearMonth);
+    if (subFolders.hasNext()) {
+      targetFolder = subFolders.next();
+    } else {
+      targetFolder = folder.createFolder(yearMonth);
+    }
+    
+    // Clean base64 string (remove data:image/png;base64, etc.)
+    const cleanBase64 = base64Data.split(",")[1] || base64Data;
+    
+    const decoded = Utilities.base64Decode(cleanBase64);
+    const blob = Utilities.newBlob(decoded, mimeType, filename);
+    const file = targetFolder.createFile(blob);
+    
+    return file.getUrl();
+  } catch (e) {
+    Logger.log("Error upload to drive: " + e.message);
+    return null;
+  }
+}

@@ -49,22 +49,22 @@ export default function ReplenishmentPage() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-[#151921] p-6 rounded-2xl border border-slate-200 dark:border-slate-800/60 shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-white/5 dark:backdrop-blur-xl dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] p-6 rounded-2xl border border-slate-200  shadow-sm">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-            <RefreshCw className="w-6 h-6 text-purple-600" />
+            <RefreshCw className="w-6 h-6 text-emerald-600 dark:text-[#B2F082]" />
             Replenishment (Top Up)
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Riwayat pengisian kembali saldo kas kecil dari pusat</p>
         </div>
-        <Button className="shadow-md shadow-primary/20 bg-purple-600 hover:bg-purple-700 text-white h-10 rounded-xl transition-all">
+        <Button className="shadow-md shadow-primary/20 bg-[#0F3D29] hover:bg-[#0F3D29]/90 dark:bg-[#B2F082] dark:hover:bg-[#a0dc72] dark:text-[#0F3D29] text-white h-10 rounded-xl transition-all">
           <RefreshCw className="w-4 h-4 mr-2" />
           Ajukan Pengisian Saldo
         </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="bg-gradient-to-br from-primary to-blue-800 text-white p-6 rounded-2xl soft-shadow col-span-1 lg:col-span-1 border-0 shadow-lg relative overflow-hidden">
+        <Card className="bg-gradient-to-br from-[#0F3D29] to-emerald-900 text-white p-6 rounded-2xl soft-shadow col-span-1 lg:col-span-1 border-0 shadow-lg relative overflow-hidden">
           {/* Decorative background circle */}
           <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white/10 blur-2xl"></div>
           
@@ -88,16 +88,16 @@ export default function ReplenishmentPage() {
           </div>
         </Card>
 
-        <Card className="bg-white dark:bg-[#151921] border-slate-200 dark:border-slate-800/60 soft-shadow rounded-2xl col-span-1 lg:col-span-2 overflow-hidden flex flex-col">
-          <div className="p-5 border-b border-slate-100 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/20">
+        <Card className="bg-white dark:bg-white/5 dark:backdrop-blur-xl dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] border-slate-200  soft-shadow rounded-2xl col-span-1 lg:col-span-2 overflow-hidden flex flex-col">
+          <div className="p-5 border-b border-slate-100 dark:border-white/5  bg-slate-50/50 dark:bg-slate-900/20">
             <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
               Riwayat Transaksi Top Up
             </h3>
           </div>
           <div className="overflow-x-auto flex-1">
             <Table>
-              <TableHeader className="bg-slate-50/50 dark:bg-[#0D0F14]/50">
-                <TableRow className="border-b border-slate-100 dark:border-slate-800/60">
+              <TableHeader className="bg-slate-50/50 dark:bg-[#070D07]/50">
+                <TableRow className="border-b border-slate-100 dark:border-white/5">
                   <TableHead className="font-semibold text-slate-600 dark:text-slate-400 py-4 px-5">ID Topup</TableHead>
                   <TableHead className="font-semibold text-slate-600 dark:text-slate-400">Tanggal</TableHead>
                   <TableHead className="font-semibold text-slate-600 dark:text-slate-400">Keterangan</TableHead>
@@ -118,10 +118,10 @@ export default function ReplenishmentPage() {
                   ))
                 ) : replenishmentData.length > 0 ? (
                   replenishmentData.map((row: any) => (
-                    <TableRow key={row.ID_Replenishment || row.Nomor_Replenishment} className="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors group">
+                    <TableRow key={row.ID_Replenishment || row.Nomor_Replenishment} className="border-b border-slate-100 dark:border-white/5 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors group">
                       <TableCell className="font-medium text-slate-900 dark:text-white py-4 px-5">
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-500/10 text-purple-600 flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-[#B2F082] flex items-center justify-center">
                             <RefreshCw className="w-4 h-4" />
                           </div>
                           <span className="text-sm font-semibold">{row.Nomor_Replenishment}</span>

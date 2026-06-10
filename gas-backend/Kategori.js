@@ -14,7 +14,7 @@ function getKategori() {
 
 function createKategori(payload) {
   try {
-    const { Nama_Kategori, Keterangan } = payload;
+    const { Nama_Kategori, Keterangan, Warna_Hex, Icon } = payload;
     if (!Nama_Kategori) {
       return respondError("Nama Kategori wajib diisi", "VALIDATION_ERROR");
     }
@@ -23,6 +23,8 @@ function createKategori(payload) {
       "ID_Kategori": generateUUID("KAT"),
       "Nama_Kategori": Nama_Kategori,
       "Keterangan": Keterangan || "-",
+      "Warna_Hex": Warna_Hex || "#3B82F6",
+      "Icon": Icon || "tag",
       "Status": "Aktif"
     };
 
@@ -35,7 +37,7 @@ function createKategori(payload) {
 
 function updateKategori(payload) {
   try {
-    const { id, Nama_Kategori, Keterangan, Status } = payload;
+    const { id, Nama_Kategori, Keterangan, Status, Warna_Hex, Icon, Tipe } = payload;
     if (!id) {
       return respondError("ID Kategori wajib disertakan", "VALIDATION_ERROR");
     }
@@ -44,6 +46,9 @@ function updateKategori(payload) {
     if (Nama_Kategori !== undefined) updates.Nama_Kategori = Nama_Kategori;
     if (Keterangan !== undefined) updates.Keterangan = Keterangan;
     if (Status !== undefined) updates.Status = Status;
+    if (Warna_Hex !== undefined) updates.Warna_Hex = Warna_Hex;
+    if (Icon !== undefined) updates.Icon = Icon;
+    if (Tipe !== undefined) updates.Tipe = Tipe;
 
     const success = updateRecord(CONFIG.SHEETS.KATEGORI, "ID_Kategori", id, updates);
     

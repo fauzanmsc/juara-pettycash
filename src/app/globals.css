@@ -15,7 +15,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 217.2 91.2% 29.8%; /* #0640b7 Corporate Blue */
+    --primary: 153 60% 15%; /* Dark Green from UI Reference */
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -38,16 +38,16 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%; /* #0D0F14 deep dark */
+    --background: 145 25% 6%; /* #0D1410 */
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 145 25% 7%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 145 25% 7%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 217.2 91.2% 59.8%; /* Lighter blue for dark mode */
+    --primary: 153 60% 15%; /* Dark Green from UI Reference */
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -70,7 +70,7 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 dark:bg-[#0D0F14] dark:text-slate-50 transition-colors duration-300;
+    @apply bg-slate-50 text-slate-900 dark:bg-[#070D07] dark:text-slate-50 transition-colors duration-300;
   }
 }
 
@@ -93,5 +93,13 @@
   @apply bg-white/70 dark:bg-[#151921]/70 backdrop-blur-md border border-white/20 dark:border-slate-800/50 shadow-sm;
 }
 .glass-panel {
-  @apply bg-white/90 dark:bg-[#0D0F14]/90 backdrop-blur-lg border border-slate-200/50 dark:border-slate-800/50 shadow-soft;
+  @apply bg-white/90 dark:bg-[#070D07]/90 backdrop-blur-lg border border-slate-200/50 dark:border-slate-800/50 shadow-soft;
+}
+/* Global hide scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

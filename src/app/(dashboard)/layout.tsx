@@ -1,10 +1,13 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useAppStore } from "@/lib/store";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from "@/components/ui/dropdown-menu";
@@ -12,9 +15,9 @@ import { LayoutDashboard, Receipt, FileText, RefreshCw, CheckSquare, Settings, L
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { CommandMenu } from "@/components/CommandMenu";
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
   { icon: FileText, label: "Pengajuan Dana", href: "/pengajuan" },
   { icon: Receipt, label: "Pengeluaran", href: "/pengeluaran" },
   { icon: CheckSquare, label: "Settlement", href: "/settlement" },
@@ -40,52 +43,98 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   const user = session?.user as any;
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+
+    useEffect(() => {
+    const handleOpenLogout = () => setLogoutDialogOpen(true);
+    const handleOpenNotifications = () => setNotificationsOpen((prev) => !prev);
+    
+    window.addEventListener('open-logout-dialog', handleOpenLogout);
+    window.addEventListener('open-notifications', handleOpenNotifications);
+    
+    return () => {
+      window.removeEventListener('open-logout-dialog', handleOpenLogout);
+      window.removeEventListener('open-notifications', handleOpenNotifications);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    setLogoutDialogOpen(true);
+  };
+
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#0D0F14]">
-      {/* Desktop Sidebar */}
+    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-black dark:bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] dark:from-[#0F3D29]/40 dark:via-[#070D07] dark:to-black relative">
+      {/* Ambient background blur for glassmorphism */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-emerald-400/10 dark:bg-[#B2F082]/10 blur-[150px] pointer-events-none z-0" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] rounded-full bg-primary/10 dark:bg-emerald-600/20 blur-[120px] pointer-events-none z-0" />
+
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="md:hidden fixed inset-0 bg-black/50 z-40 backdrop-blur-sm transition-opacity" 
+          onClick={toggleSidebar}
+        />
+      )}
+
+      {/* Sidebar (Desktop & Mobile) */}
       <aside
         className={cn(
-          "hidden md:flex flex-col bg-white dark:bg-[#151921] border-r border-slate-200 dark:border-slate-800 transition-all duration-300 z-20",
-          sidebarOpen ? "w-64" : "w-20"
+          "flex flex-col bg-white/70 backdrop-blur-xl dark:bg-white/5 dark:backdrop-blur-xl dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] border-r border-slate-200/60 dark:border-white/5 transition-all duration-300",
+          "fixed md:relative inset-y-0 left-0 z-50 md:z-20 h-full",
+          sidebarOpen ? "w-64 translate-x-0" : "w-64 -translate-x-full md:w-20 md:translate-x-0"
         )}
       >
-        <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100 dark:border-slate-800">
+        <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100 dark:border-white/5">
           {sidebarOpen ? (
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
-                <Wallet className="w-5 h-5 text-white" />
-              </div>
-              <div className="flex flex-col leading-tight">
-                <span className="font-bold text-base text-slate-900 dark:text-white tracking-tight">JUARA</span>
-                <span className="text-sm text-primary dark:text-blue-400 font-medium">PettyCash</span>
-              </div>
+            <div className="flex items-center">
+              <Image src="/images/logo-jpc-lightmode.svg" alt="Juara PettyCash" width={140} height={40} className="dark:hidden" priority />
+              <Image src="/images/logo-jpc-darkmode.svg" alt="Juara PettyCash" width={140} height={40} className="hidden dark:block" priority />
             </div>
           ) : (
-            <div className="w-8 h-8 bg-primary rounded flex items-center justify-center mx-auto">
-              <Wallet className="w-5 h-5 text-white" />
+            <div className="flex items-center justify-center mx-auto">
+              <Image src="/images/logomark-light.svg" alt="Juara PettyCash" width={32} height={32} className="dark:hidden" priority />
+              <Image src="/images/logomark-dark.svg" alt="Juara PettyCash" width={32} height={32} className="hidden dark:block" priority />
             </div>
           )}
         </div>
 
         <div className="flex-1 overflow-y-auto py-6 px-4 space-y-1 scrollbar-hide">
+          
+          {/* Dashboard Item */}
+          <Link href="/dashboard" className="block relative mb-6">
+            {pathname === "/dashboard" && (
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary dark:bg-[#B2F082] rounded-r-full shadow-[0_0_10px_rgba(178,240,130,0.4)]" />
+            )}
+            <div className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative",
+                pathname === "/dashboard"
+                  ? "bg-[#E8F5E9] dark:bg-[#B2F082]/10 text-[#0F3D29] dark:text-[#B2F082] font-bold ml-1"
+                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200"
+              )}>
+              <LayoutDashboard className={cn("w-5 h-5 transition-transform group-hover:scale-110", pathname === "/dashboard" ? "text-[#0F3D29] dark:text-[#B2F082] drop-shadow-sm" : "text-slate-400 dark:text-slate-500")} />
+              {sidebarOpen && <span className="flex-1 text-sm tracking-tight">Dashboard</span>}
+            </div>
+          </Link>
+
           <p className={cn("text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-3 px-2 uppercase tracking-wider", !sidebarOpen && "hidden")}>TRANSAKSI</p>
           {menuItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
               <Link key={item.label} href={item.href} className="block relative">
                 {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-600 dark:bg-blue-500 rounded-r-full shadow-[0_0_10px_rgba(37,99,235,0.6)]" />
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary dark:bg-[#B2F082] rounded-r-full shadow-[0_0_10px_rgba(178,240,130,0.4)]" />
                 )}
                 <div
                   className={cn(
                     "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative",
                     isActive
-                      ? "bg-blue-50/80 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-bold ml-1"
+                      ? "bg-[#E8F5E9] dark:bg-[#B2F082]/10 text-[#0F3D29] dark:text-[#B2F082] font-bold ml-1"
                       : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200"
                   )}
                 >
-                  <item.icon className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive ? "text-blue-600 dark:text-blue-400 drop-shadow-sm" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300")} />
+                  <item.icon className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive ? "text-[#0F3D29] dark:text-[#B2F082] drop-shadow-sm" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300")} />
                   {sidebarOpen && (
                     <span className="flex-1 text-sm tracking-tight">{item.label}</span>
                   )}
@@ -99,7 +148,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             );
           })}
 
-          <div className="my-6 border-t border-slate-100 dark:border-slate-800/50" />
+          <div className="my-6 border-t border-slate-200/40 dark:border-white/5" />
           
           <p className={cn("text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-3 px-2 uppercase tracking-wider", !sidebarOpen && "hidden")}>SISTEM</p>
           {secondaryMenuItems.map((item) => {
@@ -107,17 +156,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             return (
               <Link key={item.label} href={item.href} className="block relative">
                 {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-600 dark:bg-blue-500 rounded-r-full shadow-[0_0_10px_rgba(37,99,235,0.6)]" />
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary dark:bg-[#B2F082] rounded-r-full shadow-[0_0_10px_rgba(178,240,130,0.4)]" />
                 )}
                 <div
                   className={cn(
                     "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative",
                     isActive
-                      ? "bg-blue-50/80 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-bold ml-1"
+                      ? "bg-[#E8F5E9] dark:bg-[#B2F082]/10 text-[#0F3D29] dark:text-[#B2F082] font-bold ml-1"
                       : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200"
                   )}
                 >
-                  <item.icon className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive ? "text-blue-600 dark:text-blue-400 drop-shadow-sm" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300")} />
+                  <item.icon className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive ? "text-[#0F3D29] dark:text-[#B2F082] drop-shadow-sm" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300")} />
                   {sidebarOpen && <span className="text-sm tracking-tight">{item.label}</span>}
                 </div>
               </Link>
@@ -127,65 +176,46 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* User Profile in Sidebar Bottom */}
         <div className={cn(
-          "rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-800/40 dark:to-slate-900/40 border border-slate-200/60 dark:border-slate-700/50 hover:shadow-md hover:border-blue-500/30 dark:hover:border-blue-400/30 transition-all duration-300 group cursor-pointer relative overflow-hidden",
+          "rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-800/40 dark:to-slate-900/40 border border-slate-200/60 dark:border-slate-700/50 hover:shadow-md hover:border-emerald-500/30 dark:hover:border-[#B2F082]/30 transition-all duration-300 group cursor-pointer relative overflow-hidden",
           sidebarOpen ? "p-3 m-3" : "p-1.5 mx-auto my-4 w-12 flex justify-center items-center"
         )}>
           {/* Subtle glow effect on hover */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/5 to-purple-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-purple-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
           
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className={cn("flex items-center outline-none relative z-10 w-full", sidebarOpen ? "gap-3" : "justify-center")}>
-                <div className="relative shrink-0 flex">
-                  <Avatar className={cn(
-                    "ring-2 ring-white dark:ring-[#151921] shadow-sm group-hover:scale-105 transition-transform duration-300 bg-gradient-to-tr from-blue-600 via-indigo-500 to-cyan-400",
-                    sidebarOpen ? "h-10 w-10" : "h-9 w-9"
-                  )}>
-                    <AvatarImage src="/images/default-avatar.png" className="object-cover object-top" />
-                    <AvatarFallback className="bg-transparent text-white font-bold text-sm shadow-inner">
-                      {user?.name?.substring(0, 2).toUpperCase() || 'BS'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="absolute -bottom-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500 border-2 border-white dark:border-[#151921]"></span>
-                  </div>
+          <DropdownMenu open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+            <DropdownMenuTrigger>
+              <div className={cn("flex items-center outline-none relative z-10 w-full", sidebarOpen ? "gap-2.5" : "justify-center")}>
+                <div className={cn("bg-gradient-to-tr from-slate-100 to-white dark:from-slate-800 dark:to-slate-700 rounded-lg shadow-sm border border-slate-200/50 dark:border-slate-600/50 flex items-center justify-center group-hover:shadow-md group-hover:border-emerald-200 dark:group-hover:border-emerald-500/30 transition-all duration-300", sidebarOpen ? "w-8 h-8 shrink-0" : "w-10 h-10")}>
+                  <span className={cn("text-sm", !sidebarOpen && "text-xl")}>🏢</span>
                 </div>
                 {sidebarOpen && (
-                  <div className="flex-1 min-w-0 text-left">
-                    <p className="text-sm font-bold truncate text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{user?.name}</p>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate font-medium uppercase tracking-wider">{user?.role || "Admin Finance"}</p>
-                  </div>
+                  <>
+                    <div className="flex flex-col flex-1 min-w-0 text-left">
+                      <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider leading-tight">Workspace</span>
+                      <span className="text-sm font-bold truncate text-slate-800 dark:text-slate-200 leading-tight group-hover:text-emerald-600 dark:group-hover:text-[#B2F082] transition-colors">JEF GROUP ID</span>
+                    </div>
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-slate-400 shrink-0 group-hover:text-emerald-500 transition-colors"><path d="M4.18179 6.18181C4.35753 6.00608 4.64245 6.00608 4.81819 6.18181L7.49999 8.86362L10.1818 6.18181C10.3575 6.00608 10.6424 6.00608 10.8182 6.18181C10.9939 6.35755 10.9939 6.64247 10.8182 6.81821L7.81819 9.81821C7.73379 9.9026 7.61934 9.95013 7.49999 9.95013C7.38064 9.95013 7.26618 9.9026 7.18179 9.81821L4.18179 6.81821C4.00605 6.64247 4.00605 6.35755 4.18179 6.18181Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path></svg>
+                  </>
                 )}
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" sideOffset={12} className="w-64 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] bg-white/95 dark:bg-[#151921]/95 backdrop-blur-xl p-2 animate-in slide-in-from-bottom-2 fade-in duration-200">
-              <div className="px-3 py-3 mb-2 flex items-center gap-3 bg-slate-50/50 dark:bg-slate-800/30 rounded-xl">
-                <Avatar className="h-10 w-10 shadow-sm border border-slate-200/50 dark:border-slate-700/50 bg-gradient-to-tr from-blue-600 to-indigo-500">
-                  <AvatarImage src="/images/default-avatar.png" className="object-cover object-top" />
-                  <AvatarFallback className="bg-transparent text-white font-bold">
-                     {user?.name?.substring(0, 2).toUpperCase() || 'BS'}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col">
-                  <span className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{user?.name}</span>
-                  <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">{user?.email || "user@jefgroup.com"}</span>
-                </div>
-              </div>
-              
-              <DropdownMenuGroup className="px-1">
-                <Link href="/pengaturan">
-                  <DropdownMenuItem className="py-2.5 px-3 rounded-xl cursor-pointer text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:bg-slate-100 dark:focus:bg-slate-800/60 focus:text-blue-600">
-                    <Settings className="mr-3 h-4 w-4" /> Pengaturan Akun
-                  </DropdownMenuItem>
-                </Link>
-                <DropdownMenuItem className="py-2.5 px-3 rounded-xl cursor-pointer text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:bg-slate-100 dark:focus:bg-slate-800/60 focus:text-blue-600">
-                  <HelpCircle className="mr-3 h-4 w-4" /> Bantuan & Support
+            <DropdownMenuContent align="end" side="right" sideOffset={12} className="w-56 rounded-2xl border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] bg-white/70 dark:bg-white/5 dark:backdrop-blur-xl dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] backdrop-blur-xl p-2 animate-in slide-in-from-left-2 fade-in duration-200">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-3 py-2">Pilih Workspace</DropdownMenuLabel>
+                <DropdownMenuItem className="py-2.5 px-3 rounded-xl cursor-pointer bg-[#E8F5E9] dark:bg-[#B2F082]/10 text-[#0F3D29] dark:text-[#B2F082] font-semibold mb-1 focus:bg-[#E8F5E9] dark:focus:bg-[#B2F082]/20">
+                  <span className="mr-2">🏢</span> JEF GROUP ID
+                  <CheckSquare className="ml-auto h-4 w-4 text-[#B2F082]" />
+                </DropdownMenuItem>
+                <DropdownMenuItem className="py-2.5 px-3 rounded-xl cursor-pointer text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white transition-colors mb-1">
+                  <span className="mr-2">🌍</span> JEF GROUP SG
                 </DropdownMenuItem>
               </DropdownMenuGroup>
-              <div className="my-1 border-t border-slate-100 dark:border-slate-800/60" />
-              <DropdownMenuItem className="py-2.5 px-3 rounded-xl cursor-pointer text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 focus:bg-red-50 dark:focus:bg-red-500/10 focus:text-red-600 mt-1 transition-colors" onClick={() => signOut()}>
-                <LogOut className="mr-3 h-4 w-4" /> Keluar dari Sistem
+              <DropdownMenuSeparator className="my-1 border-slate-200/40 dark:border-white/5" />
+              <DropdownMenuItem className="py-2.5 px-3 rounded-xl cursor-pointer text-emerald-600 dark:text-[#B2F082] font-medium hover:bg-emerald-50 dark:hover:bg-emerald-500/10 mt-1 transition-colors">
+                <div className="w-5 h-5 rounded-full border-2 border-dashed border-[#B2F082] flex items-center justify-center mr-3">
+                  <span className="text-xs">+</span>
+                </div>
+                Tambah Workspace
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -195,15 +225,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
         {/* Mobile Dark Blue Header */}
-        <div className="md:hidden bg-primary dark:bg-[#151921] text-white h-16 flex items-center justify-between px-4 z-20 border-b border-primary dark:border-slate-800">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-white/20 backdrop-blur-md border border-white/30 rounded flex items-center justify-center text-white shadow-sm">
-              <Wallet className="w-5 h-5" />
-            </div>
-            <div className="flex flex-col leading-tight">
-              <span className="font-bold text-sm tracking-tight">JUARA</span>
-              <span className="text-xs">PettyCash</span>
-            </div>
+        <div className="md:hidden bg-primary dark:bg-white/5 dark:backdrop-blur-xl dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] text-white h-16 flex items-center justify-between px-4 z-20 border-b border-primary dark:border-slate-800">
+          <div className="flex items-center gap-3">
+            <button onClick={toggleSidebar} className="text-white hover:bg-white/20 p-1.5 rounded-lg transition-colors outline-none">
+              <Menu className="w-5 h-5" />
+            </button>
+            <Image src="/images/logo-jpc-darkmode.svg" alt="Juara PettyCash" width={110} height={30} className="drop-shadow-md" priority />
           </div>
           <div className="flex items-center gap-4">
             <div className="relative">
@@ -212,7 +239,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 8
               </span>
             </div>
-            <Avatar className="h-8 w-8 cursor-pointer bg-gradient-to-tr from-blue-600 to-indigo-500 text-white shadow-sm ring-1 ring-white/20" onClick={() => signOut()}>
+            <Avatar className="h-8 w-8 cursor-pointer bg-gradient-to-tr from-emerald-600 to-teal-500 text-white shadow-sm ring-1 ring-white/20" onClick={handleLogout}>
               <AvatarImage src="/images/default-avatar.png" className="object-cover object-top" />
               <AvatarFallback className="bg-transparent text-white font-bold text-xs">
                 {user?.name?.substring(0, 2).toUpperCase() || 'BS'}
@@ -222,34 +249,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Desktop Topbar */}
-        <header className="hidden md:flex h-16 items-center justify-between px-8 bg-white dark:bg-[#151921] border-b border-slate-200 dark:border-slate-800 z-10 sticky top-0">
-          <div className="flex items-center gap-6">
-            <Button variant="ghost" size="icon" onClick={toggleSidebar} className="text-slate-500 dark:text-slate-400">
+        <header className="hidden md:flex h-16 items-center justify-between px-8 bg-white/70 backdrop-blur-xl dark:bg-white/5 dark:backdrop-blur-xl dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] border-b border-slate-200/60 dark:border-white/5 z-10 sticky top-0">
+          <div className="flex items-center">
+            <Button variant="ghost" size="icon" onClick={toggleSidebar} className="text-slate-500 dark:text-slate-400 mr-4">
               <Menu className="w-5 h-5" />
             </Button>
             
-            {/* Breadcrumb & Quick Action */}
-            <div className="hidden lg:flex items-center gap-4">
-              <div className="flex items-center gap-2 text-sm mr-4">
-                <span className="text-slate-400 dark:text-slate-500 font-medium capitalize">
-                  {pathname.split('/')[1] || 'Dashboard'}
-                </span>
-                {pathname.split('/')[2] && (
-                  <>
-                    <span className="text-slate-300 dark:text-slate-600">/</span>
-                    <span className="text-blue-600 dark:text-blue-400 font-bold capitalize">
-                      {pathname.split('/')[2]}
-                    </span>
-                  </>
-                )}
-              </div>
-              
-              <Link href="/pengajuan/baru">
-                <Button className="h-9 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg shadow-sm shadow-blue-500/20 transition-all font-semibold text-xs border-0">
-                  + Pengajuan Cepat
-                </Button>
-              </Link>
-            </div>
+            {/* Quick Search */}
+            <CommandMenu />
           </div>
 
           <div className="flex items-center gap-5">
@@ -261,8 +268,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
 
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <div className="relative cursor-pointer text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors group flex items-center justify-center outline-none">
+              <DropdownMenuTrigger>
+                <div className="relative cursor-pointer text-slate-600 dark:text-slate-400 hover:text-emerald-600 transition-colors group flex items-center justify-center outline-none">
                   <Bell className="w-5 h-5" />
                   <span className="absolute -top-1 -right-1.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold flex items-center justify-center rounded-full border-2 border-white dark:border-[#151921] group-hover:animate-bounce">
                     8
@@ -272,14 +279,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   </div>
                 </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" sideOffset={12} className="w-80 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] bg-white/95 dark:bg-[#151921]/95 backdrop-blur-xl p-0 animate-in slide-in-from-top-2 fade-in duration-200 overflow-hidden">
-                <div className="p-4 border-b border-slate-100 dark:border-slate-800/60 flex items-center justify-between">
+              <DropdownMenuContent align="end" sideOffset={12} className="w-80 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] bg-white/70 dark:bg-white/5 dark:backdrop-blur-xl dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)]/95 backdrop-blur-xl p-0 animate-in slide-in-from-top-2 fade-in duration-200 overflow-hidden">
+                <div className="p-4 border-b border-slate-100 dark:border-white/5/60 flex items-center justify-between">
                   <h3 className="font-bold text-slate-800 dark:text-slate-200">Notifikasi</h3>
-                  <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold cursor-pointer hover:underline">Tandai semua dibaca</span>
+                  <span className="text-xs text-emerald-600 dark:text-[#B2F082] font-semibold cursor-pointer hover:underline">Tandai semua dibaca</span>
                 </div>
                 <div className="max-h-[320px] overflow-y-auto overflow-x-hidden scrollbar-hide">
                   <div className="p-4 border-b border-slate-50 dark:border-slate-800/30 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors relative">
-                    <div className="w-2 h-2 rounded-full bg-blue-500 absolute left-2 top-6"></div>
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 absolute left-2 top-6"></div>
                     <div className="pl-3">
                       <p className="text-sm text-slate-800 dark:text-slate-200 font-bold">Pengajuan #REQ-002 Disetujui</p>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Pengajuan dana operasional bulanan telah disetujui oleh Direktur.</p>
@@ -287,7 +294,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </div>
                   </div>
                   <div className="p-4 border-b border-slate-50 dark:border-slate-800/30 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors relative">
-                    <div className="w-2 h-2 rounded-full bg-blue-500 absolute left-2 top-6"></div>
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 absolute left-2 top-6"></div>
                     <div className="pl-3">
                       <p className="text-sm text-slate-800 dark:text-slate-200 font-bold">Pengeluaran Baru Tercatat</p>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Fauzan (Admin Finance) mencatat pengeluaran Konsumsi Rp 320.000.</p>
@@ -302,13 +309,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </div>
                   </div>
                 </div>
-                <div className="p-3 bg-slate-50 dark:bg-slate-900/50 text-center border-t border-slate-100 dark:border-slate-800/60 cursor-pointer group">
-                  <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Lihat Semua Notifikasi</span>
+                <div className="p-3 bg-slate-50 dark:bg-slate-900/50 text-center border-t border-slate-100 dark:border-white/5/60 cursor-pointer group">
+                  <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-[#B2F082] transition-colors">Lihat Semua Notifikasi</span>
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
             
-            <div className="relative cursor-pointer text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors group flex items-center justify-center">
+            <div className="relative cursor-pointer text-slate-600 dark:text-slate-400 hover:text-emerald-600 transition-colors group flex items-center justify-center">
               <HelpCircle className="w-5 h-5" />
               <div className="absolute -bottom-9 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900 text-[10px] font-bold px-2.5 py-1 rounded-md shadow-md whitespace-nowrap z-50">
                 Bantuan
@@ -316,38 +323,47 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
             
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <div className="flex items-center gap-2.5 pl-5 border-l border-slate-200 dark:border-slate-700 cursor-pointer group outline-none">
-                  <div className="w-8 h-8 bg-gradient-to-tr from-slate-100 to-white dark:from-slate-800 dark:to-slate-700 rounded-lg shadow-sm border border-slate-200/50 dark:border-slate-600/50 flex items-center justify-center group-hover:shadow-md group-hover:border-blue-200 dark:group-hover:border-blue-500/30 transition-all duration-300">
-                    <span className="text-sm">🏢</span>
+              <DropdownMenuTrigger>
+                <div className="relative cursor-pointer flex items-center justify-center outline-none">
+                  <Avatar className="h-9 w-9 cursor-pointer bg-slate-100 dark:bg-slate-800 shadow-sm ring-2 ring-white dark:ring-[#151921] hover:scale-105 transition-transform duration-300">
+                    <AvatarImage src="/images/default-avatar.png" className="object-cover object-top" />
+                    <AvatarFallback className="bg-transparent text-slate-700 dark:text-white font-bold text-xs">
+                      {user?.name?.substring(0, 2).toUpperCase() || "BS"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3 items-center justify-center">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 border-2 border-white dark:border-[#151921]"></span>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider leading-tight">Workspace</span>
-                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">JEF GROUP ID</span>
-                  </div>
-                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-slate-400 ml-1 group-hover:text-blue-500 transition-colors"><path d="M4.18179 6.18181C4.35753 6.00608 4.64245 6.00608 4.81819 6.18181L7.49999 8.86362L10.1818 6.18181C10.3575 6.00608 10.6424 6.00608 10.8182 6.18181C10.9939 6.35755 10.9939 6.64247 10.8182 6.81821L7.81819 9.81821C7.73379 9.9026 7.61934 9.95013 7.49999 9.95013C7.38064 9.95013 7.26618 9.9026 7.18179 9.81821L4.18179 6.81821C4.00605 6.64247 4.00605 6.35755 4.18179 6.18181Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path></svg>
                 </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" sideOffset={12} className="w-56 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] bg-white/95 dark:bg-[#151921]/95 backdrop-blur-xl p-2 animate-in slide-in-from-top-2 fade-in duration-200">
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-3 py-2">Pilih Workspace</DropdownMenuLabel>
-                  <DropdownMenuItem className="py-2.5 px-3 rounded-xl cursor-pointer bg-blue-50/50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-semibold mb-1 focus:bg-blue-50 dark:focus:bg-blue-900/30 focus:text-blue-700 dark:focus:text-blue-400">
-                    <span className="mr-2">🏢</span> JEF GROUP ID
-                    <CheckSquare className="ml-auto h-4 w-4 text-blue-600" />
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="py-2.5 px-3 rounded-xl cursor-pointer text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white transition-colors mb-1 focus:bg-slate-100 dark:focus:bg-slate-800/60 focus:text-slate-900">
-                    <span className="mr-2">🌍</span> JEF GROUP SG
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="py-2.5 px-3 rounded-xl cursor-pointer text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white transition-colors focus:bg-slate-100 dark:focus:bg-slate-800/60 focus:text-slate-900">
-                    <span className="mr-2">🌏</span> JEF GROUP MY
+              <DropdownMenuContent align="end" sideOffset={12} className="w-64 rounded-2xl border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] bg-white/70 dark:bg-white/5 dark:backdrop-blur-xl dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] backdrop-blur-xl p-2 animate-in slide-in-from-top-2 fade-in duration-200">
+                <div className="px-3 py-3 mb-2 flex items-center gap-3 bg-slate-50/50 dark:bg-slate-800/30 rounded-xl">
+                  <Avatar className="h-10 w-10 shadow-sm border border-slate-200/50 dark:border-slate-700/50 bg-slate-100 dark:bg-slate-800">
+                    <AvatarImage src="/images/default-avatar.png" className="object-cover object-top" />
+                    <AvatarFallback className="bg-transparent text-slate-700 dark:text-white font-bold">
+                       {user?.name?.substring(0, 2).toUpperCase() || "BS"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm font-bold text-slate-900 dark:text-white leading-tight truncate">{user?.name}</span>
+                    <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate">{user?.email || "user@jefgroup.com"}</span>
+                  </div>
+                </div>
+                
+                <DropdownMenuGroup className="px-1">
+                  <Link href="/pengaturan">
+                    <DropdownMenuItem className="py-2.5 px-3 rounded-xl cursor-pointer text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-emerald-600 dark:hover:text-[#B2F082] transition-colors">
+                      <Settings className="mr-3 h-4 w-4" /> Pengaturan Akun
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuItem className="py-2.5 px-3 rounded-xl cursor-pointer text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-emerald-600 dark:hover:text-[#B2F082] transition-colors">
+                    <HelpCircle className="mr-3 h-4 w-4" /> Bantuan & Support
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator className="my-1 border-slate-100 dark:border-slate-800/60" />
-                <DropdownMenuItem className="py-2.5 px-3 rounded-xl cursor-pointer text-blue-600 dark:text-blue-400 font-medium hover:bg-blue-50 dark:hover:bg-blue-500/10 focus:bg-blue-50 dark:focus:bg-blue-500/10 focus:text-blue-700 transition-colors mt-1">
-                  <div className="w-5 h-5 rounded-full border-2 border-dashed border-blue-400 flex items-center justify-center mr-3">
-                    <span className="text-xs">+</span>
-                  </div>
-                  Tambah Workspace
+                <div className="my-1 border-t border-slate-200/40 dark:border-white/5" />
+                <DropdownMenuItem className="py-2.5 px-3 rounded-xl cursor-pointer text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 mt-1 transition-colors" onClick={handleLogout}>
+                  <LogOut className="mr-3 h-4 w-4" /> Keluar dari Sistem
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -361,9 +377,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#151921] border-t border-slate-200 dark:border-slate-800 z-50 px-2 py-2 safe-area-bottom pb-6">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/70 backdrop-blur-xl dark:bg-white/5 dark:backdrop-blur-xl dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] border-t border-slate-200/60 dark:border-white/5 z-50 px-2 py-2 safe-area-bottom pb-6">
         <div className="flex justify-between items-center px-4">
-          <Link href="/dashboard" className="flex flex-col items-center gap-1 text-primary dark:text-blue-400">
+          <Link href="/dashboard" className="flex flex-col items-center gap-1 text-primary dark:text-[#B2F082]">
             <LayoutDashboard className="w-5 h-5" />
             <span className="text-[10px] font-medium">Dashboard</span>
           </Link>
@@ -394,6 +410,41 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </button>
         </div>
       </nav>
+
+      {/* Modern Logout Confirmation Modal */}
+      <Dialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+        <DialogContent 
+          overlayClassName="bg-black/40 backdrop-blur-md dark:bg-black/60"
+          className="sm:max-w-[380px] rounded-[24px] p-6 border border-slate-200/50 dark:border-white/10 dark:bg-[#111318]/95 bg-white/95 backdrop-blur-xl shadow-2xl"
+          showCloseButton={false}
+        >
+          <div className="flex flex-col items-center text-center space-y-3">
+            <div className="w-14 h-14 bg-red-50 dark:bg-red-500/10 rounded-full flex items-center justify-center mb-1">
+              <LogOut className="w-7 h-7 text-red-500" />
+            </div>
+            <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">Keluar dari Sistem?</DialogTitle>
+            <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm px-2 leading-relaxed">
+              Anda harus masuk kembali menggunakan kredensial JEF Group untuk mengakses aplikasi.
+            </DialogDescription>
+          </div>
+          <div className="flex gap-3 mt-6 w-full">
+            <Button
+              variant="outline"
+              onClick={() => setLogoutDialogOpen(false)}
+              className="flex-1 rounded-xl h-11 text-sm font-semibold border-slate-200 dark:border-slate-800 bg-white dark:bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
+            >
+              Batal
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => signOut()}
+              className="flex-1 rounded-xl h-11 text-sm font-bold bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 transition-all border-0"
+            >
+              Ya, Keluar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -57,7 +57,7 @@ export default function RegisterPage() {
               <Avatar className="w-24 h-24 border-4 border-white shadow-lg bg-gradient-to-tr from-blue-600 via-indigo-500 to-cyan-400">
                 <AvatarImage src={avatar || "/images/default-avatar.png"} className="object-cover object-top" />
                 <AvatarFallback className="bg-transparent text-white text-2xl font-bold">
-                  {name ? name.substring(0, 2).toUpperCase() : "BS"}
+                  {"BS"}
                 </AvatarFallback>
               </Avatar>
               <div>

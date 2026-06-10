@@ -7,7 +7,7 @@ function setupDatabase() {
   const ss = getDb();
   
   const tables = {
-    [CONFIG.SHEETS.PENGGUNA]: ["ID_Pengguna", "Nama", "Email", "Password", "Jabatan", "Peran", "Divisi", "Status", "Tanggal_Dibuat", "Terakhir_Login"],
+    [CONFIG.SHEETS.PENGGUNA]: ["ID_Pengguna", "Nama", "Email", "Password", "Jabatan", "Peran", "Divisi", "Status", "Tanggal_Dibuat", "Terakhir_Login", "Foto_Profil"],
     [CONFIG.SHEETS.KATEGORI]: ["ID_Kategori", "Nama_Kategori", "Keterangan", "Status"],
     [CONFIG.SHEETS.PENGAJUAN]: ["ID_Pengajuan", "Nomor_Pengajuan", "Tanggal_Pengajuan", "ID_Pemohon", "Divisi", "ID_Kategori", "Keperluan", "Nominal_Pengajuan", "Status", "Catatan_Approval", "Tanggal_Dibuat", "Tanggal_Diupdate"],
     [CONFIG.SHEETS.PERSETUJUAN]: ["ID_Persetujuan", "Referensi_ID", "Jenis_Dokumen", "ID_Penyetuju", "Nama_Penyetuju", "Jabatan_Penyetuju", "Aksi", "Status_Sebelum", "Status_Sesudah", "Catatan", "Tanggal_Persetujuan"],
@@ -57,9 +57,9 @@ function generateDummyData() {
   const penggunaSheet = ss.getSheetByName(CONFIG.SHEETS.PENGGUNA);
   if (penggunaSheet.getLastRow() <= 1) {
     const dummyPengguna = [
-      ["USR-001", "Budi Santoso", "admin@jefgroup.com", "password123", "Admin Finance", "admin_finance", "Finance Department", "active", new Date().toISOString(), new Date().toISOString()],
-      ["USR-002", "Siti Rahma", "hm@jefgroup.com", "password123", "Head Manager", "head_manager", "Finance Department", "active", new Date().toISOString(), new Date().toISOString()],
-      ["USR-003", "Ahmad Direktur", "direktur@jefgroup.com", "password123", "Direktur", "direktur", "Direksi", "active", new Date().toISOString(), new Date().toISOString()]
+      ["USR-001", "Budi Santoso", "admin@jefgroup.com", "password123", "Admin Finance", "admin_finance", "Finance Department", "active", new Date().toISOString(), new Date().toISOString(), ""],
+      ["USR-002", "Siti Rahma", "hm@jefgroup.com", "password123", "Head Manager", "head_manager", "Finance Department", "active", new Date().toISOString(), new Date().toISOString(), ""],
+      ["USR-003", "Ahmad Direktur", "direktur@jefgroup.com", "password123", "Direktur", "direktur", "Direksi", "active", new Date().toISOString(), new Date().toISOString(), ""]
     ];
     penggunaSheet.getRange(2, 1, dummyPengguna.length, dummyPengguna[0].length).setValues(dummyPengguna);
   }

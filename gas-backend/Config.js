@@ -9,6 +9,9 @@ const CONFIG = {
   // SPREADSHEET_ID adalah "1BxiMVs0XOT5xKwgwY8145234234"
   SPREADSHEET_ID: "GANTI_DENGAN_SPREADSHEET_ID_ANDA",
 
+  // Folder ID Google Drive untuk menyimpan Nota/Kwitansi
+  DRIVE_FOLDER_ID: "GANTI_DENGAN_FOLDER_ID_DRIVE_ANDA",
+
   // Nama Sheet di Database
   SHEETS: {
     PENGGUNA: "Pengguna",

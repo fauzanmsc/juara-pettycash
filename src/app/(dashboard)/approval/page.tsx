@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { fetchGAS } from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,9 +35,43 @@ export default function ApprovalPage() {
     item.Status?.toLowerCase().includes("pending")
   );
 
+  const queryClient = useQueryClient();
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const response = await fetchGAS('update_pengajuan_status', 'POST', {
+        id,
+        status,
+        userId: user?.id
+      });
+      if (!response.success) throw new Error(response.message);
+      return response;
+    },
+    onSuccess: (data, variables) => {
+      toast.success(`Pengajuan ${variables.id} berhasil ${variables.status.toLowerCase()}`);
+      queryClient.invalidateQueries({ queryKey: ['approval_list'] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Terjadi kesalahan");
+    }
+  });
+
+  const handleApprove = (id: string) => {
+    if (confirm(`Apakah Anda yakin ingin MENYETUJUI pengajuan ${id}?`)) {
+      updateStatusMutation.mutate({ id, status: "Disetujui" });
+    }
+  };
+
+  const handleReject = (id: string) => {
+    if (confirm(`Apakah Anda yakin ingin MENOLAK pengajuan ${id}?`)) {
+      updateStatusMutation.mutate({ id, status: "Ditolak" });
+    }
+  };
+
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-[#151921] p-6 rounded-2xl border border-slate-200 dark:border-slate-800/60 shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-white/5 dark:backdrop-blur-xl dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] p-6 rounded-2xl border border-slate-200  shadow-sm">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
             <CheckSquare className="w-6 h-6 text-red-500" />
@@ -46,8 +81,8 @@ export default function ApprovalPage() {
         </div>
       </div>
 
-      <Card className="bg-white dark:bg-[#151921] border-slate-200 dark:border-slate-800/60 soft-shadow rounded-2xl overflow-hidden">
-        <div className="p-5 flex justify-end items-center border-b border-slate-100 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/20">
+      <Card className="bg-white dark:bg-white/5 dark:backdrop-blur-xl dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] border-slate-200  soft-shadow rounded-2xl overflow-hidden">
+        <div className="p-5 flex justify-end items-center border-b border-slate-100 dark:border-white/5  bg-slate-50/50 dark:bg-slate-900/20">
           <Button variant="outline" size="sm" className="w-full sm:w-auto text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 h-10 rounded-xl">
             <Filter className="w-4 h-4 mr-2" />
             Filter Status
@@ -55,8 +90,8 @@ export default function ApprovalPage() {
         </div>
         <div className="overflow-x-auto">
           <Table>
-            <TableHeader className="bg-slate-50/50 dark:bg-[#0D0F14]/50">
-              <TableRow className="border-b border-slate-100 dark:border-slate-800/60">
+            <TableHeader className="bg-slate-50/50 dark:bg-[#070D07]/50">
+              <TableRow className="border-b border-slate-100 dark:border-white/5">
                 <TableHead className="font-semibold text-slate-600 dark:text-slate-400 py-4 px-5">ID Pengajuan</TableHead>
                 <TableHead className="font-semibold text-slate-600 dark:text-slate-400">Tanggal</TableHead>
                 <TableHead className="font-semibold text-slate-600 dark:text-slate-400">Pemohon</TableHead>
@@ -84,7 +119,7 @@ export default function ApprovalPage() {
                 ))
               ) : approvalData.length > 0 ? (
                 approvalData.map((row: any) => (
-                  <TableRow key={row.ID_Pengajuan} className="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                  <TableRow key={row.ID_Pengajuan} className="border-b border-slate-100 dark:border-white/5 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
                     <TableCell className="font-medium text-slate-900 dark:text-white py-4 px-5">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center">
@@ -121,10 +156,10 @@ export default function ApprovalPage() {
                     </TableCell>
                     <TableCell className="text-right pr-5">
                       <div className="flex justify-end gap-2">
-                        <Button size="icon" variant="outline" className="h-9 w-9 rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-900/50 dark:hover:bg-red-900/30 transition-colors">
+                        <Button size="icon" variant="outline" onClick={() => handleReject(row.ID_Pengajuan)} disabled={updateStatusMutation.isPending} className="h-9 w-9 rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-900/50 dark:hover:bg-red-900/30 transition-colors">
                           <X className="w-4 h-4" />
                         </Button>
-                        <Button size="icon" className="h-9 w-9 rounded-xl bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-green-600/20 transition-all">
+                        <Button size="icon" onClick={() => handleApprove(row.ID_Pengajuan)} disabled={updateStatusMutation.isPending} className="h-9 w-9 rounded-xl bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-green-600/20 transition-all">
                           <Check className="w-4 h-4" />
                         </Button>
                       </div>

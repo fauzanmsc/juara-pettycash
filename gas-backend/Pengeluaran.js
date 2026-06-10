@@ -14,7 +14,7 @@ function getPengeluaranList() {
 
 function createPengeluaran(payload) {
   try {
-    const { userId, categoryId, deskripsi, vendor, nominal } = payload;
+    const { userId, categoryId, deskripsi, vendor, nominal, fileData, fileName, fileMimeType } = payload;
     
     if (!userId || !categoryId || !nominal) {
       return respondError("Data tidak lengkap", "INVALID_PAYLOAD");
@@ -37,8 +37,16 @@ function createPengeluaran(payload) {
       "Nominal": Number(nominal),
       "Status": "Pending Review", // Menunggu disetujui (Admin/HM)
       "ID_Pembuat": userId,
-      "Tanggal_Dibuat": new Date().toISOString()
+      "Tanggal_Dibuat": new Date().toISOString(),
+      "URL_Lampiran": ""
     };
+    
+    if (fileData && fileName && fileMimeType) {
+      const fileUrl = uploadFileToDrive(fileData, fileName, fileMimeType);
+      if (fileUrl) {
+        record["URL_Lampiran"] = fileUrl;
+      }
+    }
 
     insertRecord(CONFIG.SHEETS.PENGELUARAN, record);
     logActivity(userId, "System", "Pengeluaran", "Create", `Mencatat pengeluaran baru: ${noTransaksi}`);

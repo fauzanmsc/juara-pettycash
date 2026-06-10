@@ -57,7 +57,7 @@ export default function BaruPengajuanPage() {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center gap-4 bg-white dark:bg-[#151921] p-6 rounded-2xl border border-slate-200 dark:border-slate-800/60 shadow-sm">
+      <div className="flex items-center gap-4 bg-white dark:bg-white/5 dark:backdrop-blur-xl dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] p-6 rounded-2xl border border-slate-200  shadow-sm">
         <Link href="/pengajuan">
           <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
             <ArrowLeft className="w-5 h-5 text-slate-500 dark:text-slate-400" />
@@ -69,7 +69,7 @@ export default function BaruPengajuanPage() {
         </div>
       </div>
 
-      <Card className="bg-white dark:bg-[#151921] border-slate-200 dark:border-slate-800/60 soft-shadow rounded-2xl p-6 md:p-8">
+      <Card className="bg-white dark:bg-white/5 dark:backdrop-blur-xl dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] border-slate-200  soft-shadow rounded-2xl p-6 md:p-8">
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
@@ -78,7 +78,7 @@ export default function BaruPengajuanPage() {
                 id="category" 
                 value={formData.category}
                 onChange={(e) => setFormData({...formData, category: e.target.value})}
-                className="flex h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:border-slate-700 dark:bg-[#0D0F14] dark:text-slate-50 transition-all shadow-sm"
+                className="flex h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:border-slate-700 dark:bg-[#070D07] dark:text-slate-50 transition-all shadow-sm"
                 required
               >
                 <option value="">Pilih Kategori...</option>
@@ -91,15 +91,23 @@ export default function BaruPengajuanPage() {
             
             <div className="space-y-2">
               <Label htmlFor="amount" className="text-slate-700 dark:text-slate-300 font-semibold">Nominal Estimasi (Rp) <span className="text-red-500">*</span></Label>
-              <Input 
-                id="amount" 
-                type="number" 
-                placeholder="Contoh: 500000" 
-                value={formData.amount}
-                onChange={(e) => setFormData({...formData, amount: e.target.value})}
-                required
-                className="h-11 bg-slate-50 dark:bg-[#0D0F14] border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl shadow-sm focus-visible:ring-primary"
-              />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <span className="text-slate-500 dark:text-slate-400 font-bold text-sm">Rp</span>
+                </div>
+                <Input 
+                  id="amount" 
+                  type="text" 
+                  placeholder="0" 
+                  value={formData.amount ? new Intl.NumberFormat('id-ID').format(Number(formData.amount)) : ""}
+                  onChange={(e) => {
+                    const rawValue = e.target.value.replace(/\D/g, "");
+                    setFormData({...formData, amount: rawValue});
+                  }}
+                  required
+                  className="h-11 pl-12 bg-slate-50 dark:bg-[#070D07] border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl shadow-sm focus-visible:ring-primary font-bold text-lg"
+                />
+              </div>
             </div>
           </div>
 
@@ -111,14 +119,14 @@ export default function BaruPengajuanPage() {
               value={formData.desc}
               onChange={(e) => setFormData({...formData, desc: e.target.value})}
               required
-              className="min-h-[120px] bg-slate-50 dark:bg-[#0D0F14] border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl shadow-sm focus-visible:ring-primary p-4"
+              className="min-h-[120px] bg-slate-50 dark:bg-[#070D07] border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl shadow-sm focus-visible:ring-primary p-4"
             />
           </div>
 
           <div className="space-y-2">
             <Label className="text-slate-700 dark:text-slate-300 font-semibold">Lampiran / Dokumen Pendukung (Opsional)</Label>
-            <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-8 text-center bg-slate-50/50 dark:bg-[#0D0F14]/50 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group">
-              <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm group-hover:scale-110 transition-transform border border-slate-100 dark:border-slate-700">
+            <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-8 text-center bg-slate-50/50 dark:bg-[#070D07]/50 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group">
+              <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm group-hover:scale-110 transition-transform border border-slate-100 dark:border-white/5 dark:border-slate-700">
                 <UploadCloud className="w-6 h-6 text-primary" />
               </div>
               <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Klik untuk unggah atau seret file ke sini</p>
@@ -126,7 +134,7 @@ export default function BaruPengajuanPage() {
             </div>
           </div>
 
-          <div className="pt-6 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800/60">
+          <div className="pt-6 flex justify-end gap-3 border-t border-slate-100 dark:border-white/5">
             <Link href="/pengajuan">
               <Button type="button" variant="ghost" className="text-slate-600 dark:text-slate-400 h-11 rounded-xl px-6 hover:bg-slate-100 dark:hover:bg-slate-800">
                 Batal

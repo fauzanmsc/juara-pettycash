@@ -56,6 +56,9 @@ function doGet(e) {
       case "get_logs":
         return respondSuccess(getAllRecords(CONFIG.SHEETS.LOG_AKTIVITAS));
 
+      case "get_settings":
+        return getSettings();
+
       default:
         return respondError("Action GET tidak ditemukan", "INVALID_ACTION");
     }
@@ -94,11 +97,19 @@ function doPost(e) {
       case "create_kategori":
         return createKategori(payload);
 
+      case "update_pengajuan_status":
+        return updatePengajuanStatus(payload);
       case "update_kategori":
         return updateKategori(payload);
 
       case "delete_kategori":
         return deleteKategori(payload);
+
+      case "update_profile":
+        return updateProfile(payload);
+
+      case "update_settings":
+        return updateSettings(payload, payload.userId);
 
       default:
         return respondError("Action POST tidak ditemukan", "INVALID_ACTION");

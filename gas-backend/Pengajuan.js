@@ -65,3 +65,42 @@ function createPengajuan(payload) {
     return respondError(error.message, "CREATE_PENGAJUAN_ERROR");
   }
 }
+
+function updatePengajuanStatus(payload) {
+  try {
+    const { id, status, userId } = payload;
+    if (!id || !status) {
+      return createErrorResponse("ID dan Status wajib diisi", 400);
+    }
+    
+    const records = getAllRecords(CONFIG.SHEETS.PENGAJUAN);
+    const index = records.findIndex(r => r.ID_Pengajuan === id);
+    
+    if (index === -1) {
+      return createErrorResponse("Data pengajuan tidak ditemukan", 404);
+    }
+    
+    // Update the row (adding 2 to index to account for header and 0-based index)
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.SHEETS.PENGAJUAN);
+    // Let's find the column index for "Status"
+    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    const statusColIndex = headers.indexOf("Status") + 1;
+    
+    if (statusColIndex > 0) {
+      sheet.getRange(index + 2, statusColIndex).setValue(status);
+      
+      // Log Activity
+      logActivity(
+        userId || "SISTEM",
+        "Approval",
+        `Mengubah status pengajuan ${id} menjadi ${status}`
+      );
+      
+      return createSuccessResponse(null, `Status pengajuan ${id} berhasil diperbarui menjadi ${status}`);
+    } else {
+      return createErrorResponse("Kolom Status tidak ditemukan di sheet", 500);
+    }
+  } catch (error) {
+    return createErrorResponse("Gagal memperbarui status: " + error.toString(), 500);
+  }
+}
