@@ -4,13 +4,11 @@
  */
 
 const CONFIG = {
-  // Ganti dengan ID Spreadsheet Anda (diambil dari URL)
-  // Contoh: https://docs.google.com/spreadsheets/d/1BxiMVs0XOT5xKwgwY8145234234/edit
-  // SPREADSHEET_ID adalah "1BxiMVs0XOT5xKwgwY8145234234"
+
   SPREADSHEET_ID: "1eDIve-EuA9Q_sEysp8E271veilLMhXw76hUAyN7Jhv8",
 
   // Folder ID Google Drive untuk menyimpan Nota/Kwitansi
-  DRIVE_FOLDER_ID: "1zYaWBDsn9eBSdA5dxa6HzoGO8bhApl4w",
+  DRIVE_FOLDER_ID: "19WQVOiX8elXXZ8XRKWaPRQCUdMsWJ6oA",
 
   // Nama Sheet di Database
   SHEETS: {

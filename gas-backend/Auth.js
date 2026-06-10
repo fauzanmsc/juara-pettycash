@@ -34,7 +34,7 @@ function validateUser(email, password) {
     role: user.Peran,
     division: user.Divisi,
     position: user.Jabatan,
-    avatar: user.Foto_Profil ? user.Foto_Profil.replace(new RegExp("/file/d/([a-zA-Z0-9_-]+)/(view|edit).*"), "/uc?export=view&id=$1") : ""
+    avatar: user.Foto_Profil ? user.Foto_Profil.replace(new RegExp("/file/d/([a-zA-Z0-9_-]+)/(view|edit).*"), "/thumbnail?id=$1&sz=w400") : ""
   });
 }
 
@@ -115,7 +115,7 @@ function updateProfile(payload) {
       if (data[i][0] === id) {
         newAvatarUrl = sheet.getRange(i + 1, 11).getValue();
         if (newAvatarUrl) {
-          newAvatarUrl = newAvatarUrl.replace(new RegExp("/file/d/([a-zA-Z0-9_-]+)/(view|edit).*"), "/uc?export=view&id=$1");
+          newAvatarUrl = newAvatarUrl.replace(new RegExp("/file/d/([a-zA-Z0-9_-]+)/(view|edit).*"), "/thumbnail?id=$1&sz=w400");
         }
         break;
       }

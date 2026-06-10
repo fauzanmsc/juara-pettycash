@@ -81,7 +81,7 @@ export default function BaruPengeluaranPage() {
 
       const res = await fetchGAS('create_pengeluaran', 'POST', payload);
       
-      if (res.status === 'success') {
+      if (res.success) {
         router.push("/pengeluaran");
         router.refresh();
       } else {

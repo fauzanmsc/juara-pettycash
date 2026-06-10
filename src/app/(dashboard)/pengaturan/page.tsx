@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { User, Bell, Shield, Save, Loader2, Eye, EyeOff, Upload, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 export default function PengaturanPage() {
@@ -18,6 +19,7 @@ export default function PengaturanPage() {
   const { update } = useSession();
   const [activeTab, setActiveTab] = useState("profil");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   
   // Profile State
   const [name, setName] = useState(user?.name || "");
@@ -35,7 +37,7 @@ export default function PengaturanPage() {
     if (activeTab === "sistem" && !settings) {
       setSysLoading(true);
       fetchGAS("get_settings", "GET").then((res) => {
-        if (res.status === "success") {
+        if (res.success) {
           setSettings(res.data);
         }
         setSysLoading(false);
@@ -73,11 +75,21 @@ export default function PengaturanPage() {
         avatar
       };
       const res = await fetchGAS("update_profile", "POST", payload);
-      if (res.status === "success") {
-        // Use the new Google Drive URL returned by the backend, or fallback to avatar
-        const finalAvatarUrl = res.data?.avatarUrl || avatar;
-        await update({ name, email, image: finalAvatarUrl });
-        toast.success("Profil berhasil diperbarui!");
+      if (res.success) {
+        // ONLY update the session image if the backend returned the new Drive URL.
+        // DO NOT fallback to `avatar` (which is Base64) because it will exceed the 4KB NextAuth cookie limit.
+        const updatePayload: any = { name, email };
+        if (res.data?.avatarUrl) {
+          updatePayload.image = res.data.avatarUrl;
+        }
+        await update(updatePayload);
+        
+        // Show the beautiful success modal
+        setIsSuccessModalOpen(true);
+        setTimeout(() => {
+          setIsSuccessModalOpen(false);
+        }, 2000);
+        
         setPassword("");
       } else {
         toast.error(res.message || "Gagal memperbarui profil");
@@ -98,7 +110,7 @@ export default function PengaturanPage() {
         ...settings
       };
       const res = await fetchGAS("update_settings", "POST", payload);
-      if (res.status === "success") {
+      if (res.success) {
         toast.success("Pengaturan sistem berhasil disimpan!");
       } else {
         toast.error(res.message || "Gagal memperbarui sistem");
@@ -348,6 +360,29 @@ export default function PengaturanPage() {
           )}
         </div>
       </div>
+
+      {/* Profile Update Success Modal */}
+      <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
+        <DialogContent
+          overlayClassName="bg-[#070D07]/80 backdrop-blur-xl"
+          className="sm:max-w-[340px] p-0 border border-[#B2F082]/20 bg-[#151921]/90 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden shadow-[0_0_50px_rgba(178,240,130,0.1)] [&>button]:hidden"
+        >
+          <div className="p-10 flex flex-col items-center text-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-[#B2F082]/5 blur-3xl opacity-50"></div>
+            <div className="relative w-24 h-24 mb-8">
+              {/* Simple Circular Loader */}
+              <div className="absolute inset-0 border-[6px] border-[#B2F082]/20 rounded-full"></div>
+              <div className="absolute inset-0 border-[6px] border-[#B2F082] rounded-full border-t-transparent animate-spin"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <img src="/images/logomark-dark.svg" alt="Logomark" className="w-10 h-10 animate-pulse drop-shadow-[0_0_15px_rgba(178,240,130,0.5)]" />
+              </div>
+            </div>
+            <h2 className="text-xl font-extrabold text-white mb-2 tracking-tight relative z-10">Berhasil!</h2>
+            <p className="text-[#B2F082] text-[10px] font-bold animate-pulse uppercase tracking-widest relative z-10">PROFIL DIPERBARUI</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }

@@ -9,14 +9,13 @@ export default function Loading() {
           <Image src="/images/logo-jpc-darkmode.svg" alt="Juara PettyCash" width={160} height={45} className="hidden dark:block mb-6" priority />
         </div>
         
-        <div className="relative w-16 h-16">
-          {/* Tech Loader Animation */}
-          <div className="absolute inset-0 border-4 border-[#B2F082]/20 rounded-full"></div>
-          <div className="absolute inset-0 border-4 border-[#B2F082] rounded-full border-t-transparent animate-spin"></div>
-          <div className="absolute inset-2 border-4 border-[#0F3D29]/20 dark:border-[#B2F082]/10 rounded-full"></div>
-          <div className="absolute inset-2 border-4 border-[#0F3D29] dark:border-[#B2F082]/60 rounded-full border-b-transparent animate-[spin_1.5s_reverse_linear_infinite]"></div>
+        <div className="relative w-20 h-20 mb-2">
+          {/* Simple Circular Loader */}
+          <div className="absolute inset-0 border-[5px] border-[#B2F082]/20 rounded-full"></div>
+          <div className="absolute inset-0 border-[5px] border-[#B2F082] rounded-full border-t-transparent animate-spin"></div>
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-4 h-4 bg-[#B2F082] rounded-full animate-pulse shadow-[0_0_15px_#B2F082]"></div>
+            <Image src="/images/logomark-light.svg" alt="Logo" width={32} height={32} className="dark:hidden animate-pulse" />
+            <Image src="/images/logomark-dark.svg" alt="Logo" width={32} height={32} className="hidden dark:block animate-pulse" />
           </div>
         </div>
         
