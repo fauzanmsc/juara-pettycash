@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,9 +20,14 @@ export default function LoginPage() {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  const { status } = useSession();
+
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (status === "authenticated") {
+      router.replace("/dashboard");
+    }
+  }, [status, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +64,7 @@ export default function LoginPage() {
       } else {
         setIsSuccessModalOpen(true);
         setTimeout(() => {
-          router.push("/dashboard");
+          router.replace("/dashboard");
         }, 1500);
       }
     } catch (err) {
@@ -215,8 +220,8 @@ export default function LoginPage() {
                 <img src="/images/logomark-dark.svg" alt="Logomark" className="w-10 h-10 animate-pulse drop-shadow-[0_0_15px_rgba(178,240,130,0.5)]" />
               </div>
             </div>
-            <h2 className="text-xl font-extrabold text-white mb-2 tracking-tight relative z-10">Authenticating...</h2>
-            <p className="text-[#B2F082] text-[10px] font-bold animate-pulse uppercase tracking-widest relative z-10">Initializing Secure Session</p>
+            <h2 className="text-xl font-extrabold text-white mb-2 tracking-tight relative z-10">Mengautentikasi...</h2>
+            <p className="text-[#B2F082] text-[10px] font-bold animate-pulse uppercase tracking-widest relative z-10">Memulai Sesi Aman</p>
           </div>
         </DialogContent>
       </Dialog>

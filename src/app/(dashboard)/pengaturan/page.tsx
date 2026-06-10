@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { User, Bell, Shield, Save, Loader2, Eye, EyeOff, Upload, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function PengaturanPage() {
   const { data: session } = useSession();
@@ -47,7 +48,7 @@ export default function PengaturanPage() {
     if (!file) return;
     
     if (file.size > 2 * 1024 * 1024) {
-      alert("Ukuran foto maksimal 2MB!");
+      toast.error("Ukuran foto maksimal 2MB!");
       return;
     }
     
@@ -73,14 +74,16 @@ export default function PengaturanPage() {
       };
       const res = await fetchGAS("update_profile", "POST", payload);
       if (res.status === "success") {
-        await update({ name, email, image: avatar });
-        alert("Profil berhasil diperbarui!");
+        // Use the new Google Drive URL returned by the backend, or fallback to avatar
+        const finalAvatarUrl = res.data?.avatarUrl || avatar;
+        await update({ name, email, image: finalAvatarUrl });
+        toast.success("Profil berhasil diperbarui!");
         setPassword("");
       } else {
-        alert(res.message || "Gagal memperbarui profil");
+        toast.error(res.message || "Gagal memperbarui profil");
       }
     } catch (err) {
-      alert("Terjadi kesalahan.");
+      toast.error("Terjadi kesalahan sistem saat memperbarui profil.");
     } finally {
       setIsLoading(false);
     }
@@ -96,12 +99,12 @@ export default function PengaturanPage() {
       };
       const res = await fetchGAS("update_settings", "POST", payload);
       if (res.status === "success") {
-        alert("Pengaturan sistem berhasil disimpan!");
+        toast.success("Pengaturan sistem berhasil disimpan!");
       } else {
-        alert(res.message || "Gagal memperbarui sistem");
+        toast.error(res.message || "Gagal memperbarui sistem");
       }
     } catch (err) {
-      alert("Terjadi kesalahan.");
+      toast.error("Terjadi kesalahan sistem.");
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +116,7 @@ export default function PengaturanPage() {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      alert("Profil berhasil diperbarui!");
+      toast.success("Profil berhasil diperbarui!");
     }, 1000);
   };
 

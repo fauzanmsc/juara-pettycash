@@ -33,7 +33,8 @@ function validateUser(email, password) {
     email: user.Email,
     role: user.Peran,
     division: user.Divisi,
-    position: user.Jabatan
+    position: user.Jabatan,
+    avatar: user.Foto_Profil ? user.Foto_Profil.replace(new RegExp("/file/d/([a-zA-Z0-9_-]+)/(view|edit).*"), "/uc?export=view&id=$1") : ""
   });
 }
 
@@ -108,7 +109,19 @@ function updateProfile(payload) {
     
     logActivity(id, name || id, "auth", "update_profile", "Pengguna memperbarui data profil");
     
-    return respondSuccess({ message: "Profil berhasil diperbarui" });
+    // Retrieve the newly updated avatar URL from the sheet to return it
+    let newAvatarUrl = "";
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === id) {
+        newAvatarUrl = sheet.getRange(i + 1, 11).getValue();
+        if (newAvatarUrl) {
+          newAvatarUrl = newAvatarUrl.replace(new RegExp("/file/d/([a-zA-Z0-9_-]+)/(view|edit).*"), "/uc?export=view&id=$1");
+        }
+        break;
+      }
+    }
+
+    return respondSuccess({ message: "Profil berhasil diperbarui", avatarUrl: newAvatarUrl });
   } catch (error) {
     return respondError("Gagal memperbarui profil: " + error.message, "INTERNAL_ERROR");
   }

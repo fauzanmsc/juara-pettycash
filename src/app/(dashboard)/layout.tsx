@@ -37,10 +37,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const pathname = usePathname();
 
-  if (status === "unauthenticated") {
-    router.push("/login");
-    return null;
-  }
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
 
   const user = session?.user as any;
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
@@ -62,6 +63,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const handleLogout = () => {
     setLogoutDialogOpen(true);
   };
+
+  if (status === "loading" || status === "unauthenticated") {
+    return null;
+  }
 
 
   return (
@@ -240,7 +245,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </span>
             </div>
             <Avatar className="h-8 w-8 cursor-pointer bg-gradient-to-tr from-emerald-600 to-teal-500 text-white shadow-sm ring-1 ring-white/20" onClick={handleLogout}>
-              <AvatarImage src="/images/default-avatar.png" className="object-cover object-top" />
+              <AvatarImage src={user?.image || "/images/default-avatar.png"} className="object-cover object-top" />
               <AvatarFallback className="bg-transparent text-white font-bold text-xs">
                 {user?.name?.substring(0, 2).toUpperCase() || 'BS'}
               </AvatarFallback>
@@ -326,7 +331,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <DropdownMenuTrigger>
                 <div className="relative cursor-pointer flex items-center justify-center outline-none">
                   <Avatar className="h-9 w-9 cursor-pointer bg-slate-100 dark:bg-slate-800 shadow-sm ring-2 ring-white dark:ring-[#151921] hover:scale-105 transition-transform duration-300">
-                    <AvatarImage src="/images/default-avatar.png" className="object-cover object-top" />
+                    <AvatarImage src={user?.image || "/images/default-avatar.png"} className="object-cover object-top" />
                     <AvatarFallback className="bg-transparent text-slate-700 dark:text-white font-bold text-xs">
                       {user?.name?.substring(0, 2).toUpperCase() || "BS"}
                     </AvatarFallback>
@@ -340,7 +345,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <DropdownMenuContent align="end" sideOffset={12} className="w-64 rounded-2xl border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] bg-white/70 dark:bg-white/5 dark:backdrop-blur-xl dark:border-white/10 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] backdrop-blur-xl p-2 animate-in slide-in-from-top-2 fade-in duration-200">
                 <div className="px-3 py-3 mb-2 flex items-center gap-3 bg-slate-50/50 dark:bg-slate-800/30 rounded-xl">
                   <Avatar className="h-10 w-10 shadow-sm border border-slate-200/50 dark:border-slate-700/50 bg-slate-100 dark:bg-slate-800">
-                    <AvatarImage src="/images/default-avatar.png" className="object-cover object-top" />
+                    <AvatarImage src={user?.image || "/images/default-avatar.png"} className="object-cover object-top" />
                     <AvatarFallback className="bg-transparent text-slate-700 dark:text-white font-bold">
                        {user?.name?.substring(0, 2).toUpperCase() || "BS"}
                     </AvatarFallback>
