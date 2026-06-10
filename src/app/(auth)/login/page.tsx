@@ -16,6 +16,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -25,8 +26,25 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setFieldErrors({});
     setError("");
+
+    // Custom validation
+    const errors: { email?: string; password?: string } = {};
+    if (!email.trim()) {
+      errors.email = "Email tidak boleh kosong";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.email = "Format email tidak valid";
+    }
+    if (!password) {
+      errors.password = "Password tidak boleh kosong";
+    }
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
       const res = await signIn("credentials", {
@@ -56,14 +74,14 @@ export default function LoginPage() {
     <div className="min-h-screen w-full flex relative items-center justify-center lg:justify-end lg:px-32 p-6 overflow-hidden bg-[#070D07]">
       {/* Full Screen Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
-        <img 
-          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=80" 
-          alt="Background" 
-          className="absolute inset-0 w-full h-full object-cover opacity-20 dark:opacity-30 mix-blend-luminosity" 
+        <img
+          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=80"
+          alt="Background"
+          className="absolute inset-0 w-full h-full object-cover opacity-20 dark:opacity-30 mix-blend-luminosity"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-[#0F3D29]/95 via-[#0F3D29]/80 to-[#B2F082]/10 mix-blend-multiply" />
         <div className="absolute inset-0 bg-[#070D07]/50 dark:bg-[#070D07]/80" /> {/* Dimmer */}
-        
+
         {/* Decorative blur orbs */}
         <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-[#B2F082] rounded-full mix-blend-overlay filter blur-[150px] opacity-30 animate-pulse" />
         <div className="absolute bottom-[-10%] right-[10%] w-[40vw] h-[40vw] bg-[#0F3D29] rounded-full mix-blend-overlay filter blur-[150px] opacity-80" />
@@ -93,28 +111,35 @@ export default function LoginPage() {
           {/* subtle inner glow */}
           <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
 
-          <div className="text-center lg:text-left mb-10 relative z-10">
+          <div className="text-center mb-10 relative z-10">
             <h2 className="text-3xl font-bold text-white tracking-tight">Masuk ke Akun</h2>
             <p className="text-slate-300 dark:text-slate-400 mt-2 text-sm">Gunakan kredensial perusahaan Anda untuk melanjutkan.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+          <form onSubmit={handleSubmit} noValidate className="space-y-6 relative z-10">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-200 font-medium ml-1">Email Korporat</Label>
+              <Label htmlFor="email" className="text-slate-200 font-medium ml-1">Masukkan Email</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="contoh: nama@jefgroup.com"
+                placeholder="username@jefgroup.id"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="h-14 bg-white/5 border-white/10 text-white placeholder:text-slate-400 focus-visible:ring-[#B2F082] focus-visible:border-[#B2F082] rounded-2xl backdrop-blur-md transition-all px-5 text-base"
+                onChange={(e) => { setEmail(e.target.value); setFieldErrors(prev => ({ ...prev, email: undefined })); }}
+                className={`h-14 bg-white/5 text-white placeholder:text-slate-400 focus-visible:ring-[#B2F082] focus-visible:border-[#B2F082] rounded-2xl backdrop-blur-md transition-all px-5 text-base ${
+                  fieldErrors.email ? 'border-red-400/60 ring-1 ring-red-400/30' : 'border-white/10'
+                }`}
               />
+              {fieldErrors.email && (
+                <p className="text-red-300 text-xs ml-1 flex items-center gap-1.5 animate-in slide-in-from-top-1 fade-in duration-200">
+                  <span className="inline-block w-1 h-1 rounded-full bg-red-400" />
+                  {fieldErrors.email}
+                </p>
+              )}
             </div>
-            
+
             <div className="space-y-2">
               <div className="flex justify-between items-center ml-1">
-                <Label htmlFor="password" className="text-slate-200 font-medium">Password</Label>
+                <Label htmlFor="password" className="text-slate-200 font-medium">Masukkan Password</Label>
                 <a href="#" className="text-xs font-semibold text-[#B2F082] hover:text-[#B2F082]/80 transition-colors">Lupa Password?</a>
               </div>
               <div className="relative">
@@ -123,9 +148,10 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="h-14 bg-white/5 border-white/10 text-white placeholder:text-slate-400 focus-visible:ring-[#B2F082] focus-visible:border-[#B2F082] rounded-2xl backdrop-blur-md transition-all px-5 pr-12 text-base"
+                  onChange={(e) => { setPassword(e.target.value); setFieldErrors(prev => ({ ...prev, password: undefined })); }}
+                  className={`h-14 bg-white/5 text-white placeholder:text-slate-400 focus-visible:ring-[#B2F082] focus-visible:border-[#B2F082] rounded-2xl backdrop-blur-md transition-all px-5 pr-12 text-base ${
+                    fieldErrors.password ? 'border-red-400/60 ring-1 ring-red-400/30' : 'border-white/10'
+                  }`}
                 />
                 <button
                   type="button"
@@ -135,6 +161,12 @@ export default function LoginPage() {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              {fieldErrors.password && (
+                <p className="text-red-300 text-xs ml-1 flex items-center gap-1.5 animate-in slide-in-from-top-1 fade-in duration-200">
+                  <span className="inline-block w-1 h-1 rounded-full bg-red-400" />
+                  {fieldErrors.password}
+                </p>
+              )}
             </div>
 
             {error && (
@@ -168,8 +200,8 @@ export default function LoginPage() {
       </div>
 
       {/* Login Success Modal / Tech Loader */}
-      <Dialog open={isSuccessModalOpen} onOpenChange={() => {}}>
-        <DialogContent 
+      <Dialog open={isSuccessModalOpen} onOpenChange={() => { }}>
+        <DialogContent
           overlayClassName="bg-[#070D07]/80 backdrop-blur-xl"
           className="sm:max-w-[340px] p-0 border border-[#B2F082]/20 bg-[#151921]/90 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden shadow-[0_0_50px_rgba(178,240,130,0.1)] [&>button]:hidden"
         >
