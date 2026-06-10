@@ -208,13 +208,11 @@ export default function LoginPage() {
           <div className="p-10 flex flex-col items-center text-center relative overflow-hidden">
             <div className="absolute inset-0 bg-[#B2F082]/5 blur-3xl opacity-50"></div>
             <div className="relative w-24 h-24 mb-8">
-              {/* Retina ready tech loader */}
-              <div className="absolute inset-0 border-4 border-[#B2F082]/20 rounded-full shadow-[inset_0_0_15px_rgba(178,240,130,0.1)]"></div>
-              <div className="absolute inset-0 border-4 border-[#B2F082] rounded-full border-t-transparent animate-spin"></div>
-              <div className="absolute inset-2 border-4 border-[#0F3D29]/20 dark:border-[#B2F082]/10 rounded-full"></div>
-              <div className="absolute inset-2 border-4 border-[#0F3D29] dark:border-[#B2F082]/60 rounded-full border-b-transparent animate-[spin_1.5s_reverse_linear_infinite]"></div>
+              {/* Simple Circular Loader */}
+              <div className="absolute inset-0 border-[6px] border-[#B2F082]/20 rounded-full"></div>
+              <div className="absolute inset-0 border-[6px] border-[#B2F082] rounded-full border-t-transparent animate-spin"></div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-8 h-8 bg-[#B2F082] rounded-full animate-pulse shadow-[0_0_20px_#B2F082]"></div>
+                <img src="/images/logomark-dark.svg" alt="Logomark" className="w-10 h-10 animate-pulse drop-shadow-[0_0_15px_rgba(178,240,130,0.5)]" />
               </div>
             </div>
             <h2 className="text-xl font-extrabold text-white mb-2 tracking-tight relative z-10">Authenticating...</h2>

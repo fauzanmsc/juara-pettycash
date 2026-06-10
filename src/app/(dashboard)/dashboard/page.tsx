@@ -200,9 +200,9 @@ export default function DashboardPage() {
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 sm:ml-[3.75rem] font-medium">Pantau keuangan divisi Anda dengan sistem terintegrasi</p>
         </div>
-        <div className="flex items-stretch gap-3 w-full sm:w-auto mt-2 sm:mt-0 h-[44px]">
+        <div className="flex items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0 h-[44px]">
           <Select defaultValue="Juni">
-            <SelectTrigger className="w-full sm:w-[150px] bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 h-[44px] rounded-xl font-semibold text-slate-700 dark:text-slate-200 shadow-sm hover:border-primary/50 transition-all focus:ring-0 focus:ring-offset-0 capitalize">
+            <SelectTrigger className="w-full sm:w-[150px] bg-slate-50 dark:bg-[#1A202C]/50 border border-slate-200 dark:border-white/10 h-[44px] rounded-xl font-bold text-sm text-slate-700 dark:text-slate-200 shadow-sm hover:border-primary/50 transition-all focus:ring-0 focus:ring-offset-0 capitalize flex items-center">
               <SelectValue placeholder="Bulan ini" />
             </SelectTrigger>
             <SelectContent className="rounded-xl shadow-xl border-slate-100 dark:border-white/5 p-2 bg-white/80 dark:bg-[#1a1f2c]/80 backdrop-blur-xl">
@@ -213,7 +213,7 @@ export default function DashboardPage() {
           
           <Popover>
             <PopoverTrigger asChild>
-              <div role="button" className="cursor-pointer bg-[#0F3D29] text-[#B2F082] hover:bg-[#0F3D29]/90 dark:bg-[#B2F082] dark:hover:bg-[#a0dc72] dark:text-emerald-400 h-[44px] px-6 rounded-xl shadow-[0_4px_15px_rgba(15,61,41,0.2)] dark:shadow-[0_4px_15px_rgba(178,240,130,0.2)] hover:shadow-lg transition-all duration-300 font-extrabold text-sm border-0 shrink-0 flex items-center group">
+              <div role="button" className="cursor-pointer bg-[#0F3D29] text-[#B2F082] hover:bg-[#0F3D29]/90 dark:bg-[#B2F082] dark:hover:bg-[#a0dc72] dark:text-[#0F3D29] h-[44px] px-6 rounded-xl shadow-[0_4px_15px_rgba(15,61,41,0.2)] dark:shadow-[0_4px_15px_rgba(178,240,130,0.2)] hover:shadow-lg transition-all duration-300 font-bold text-sm border-0 shrink-0 flex items-center justify-center group">
                 <Filter className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
                 Filter
               </div>
