@@ -27,6 +27,13 @@ function validateUser(email, password) {
 
   logActivity(user.ID_Pengguna, user.Nama, "auth", "login", "User berhasil login via Google OAuth");
 
+  // Extract ID from any Google Drive link format
+  let avatarUrl = "";
+  if (user.Foto_Profil) {
+    const match = user.Foto_Profil.match(/[-\w]{25,}/);
+    avatarUrl = match ? `https://lh3.googleusercontent.com/d/${match[0]}` : user.Foto_Profil;
+  }
+
   return respondSuccess({
     id: user.ID_Pengguna,
     name: user.Nama,
@@ -34,7 +41,7 @@ function validateUser(email, password) {
     role: user.Peran,
     division: user.Divisi,
     position: user.Jabatan,
-    avatar: user.Foto_Profil ? user.Foto_Profil.replace(new RegExp("/file/d/([a-zA-Z0-9_-]+)/(view|edit).*"), "/thumbnail?id=$1&sz=w400") : ""
+    avatar: avatarUrl
   });
 }
 
@@ -73,13 +80,14 @@ function updateProfile(payload) {
               const mimeType = avatar.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/)[1];
               const blob = Utilities.newBlob(Utilities.base64Decode(base64Data), mimeType, "avatar_" + id);
               
-              // Temukan atau buat folder "Avatars"
+              // Temukan atau buat folder "Avatars" di dalam direktori Config Utama
+              const mainFolder = DriveApp.getFolderById(CONFIG.DRIVE_FOLDER_ID);
               let folder;
-              const folders = DriveApp.getFoldersByName("Avatars_PettyCash");
+              const folders = mainFolder.getFoldersByName("Avatars");
               if (folders.hasNext()) {
                 folder = folders.next();
               } else {
-                folder = DriveApp.createFolder("Avatars_PettyCash");
+                folder = mainFolder.createFolder("Avatars");
                 folder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
               }
               
@@ -113,9 +121,10 @@ function updateProfile(payload) {
     let newAvatarUrl = "";
     for (let i = 1; i < data.length; i++) {
       if (data[i][0] === id) {
-        newAvatarUrl = sheet.getRange(i + 1, 11).getValue();
-        if (newAvatarUrl) {
-          newAvatarUrl = newAvatarUrl.replace(new RegExp("/file/d/([a-zA-Z0-9_-]+)/(view|edit).*"), "/thumbnail?id=$1&sz=w400");
+        let rawUrl = sheet.getRange(i + 1, 11).getValue();
+        if (rawUrl) {
+          const match = rawUrl.toString().match(/[-\w]{25,}/);
+          newAvatarUrl = match ? `https://lh3.googleusercontent.com/d/${match[0]}` : rawUrl;
         }
         break;
       }
