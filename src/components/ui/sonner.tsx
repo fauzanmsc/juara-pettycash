@@ -11,34 +11,16 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
-      icons={{
-        success: (
-          <CircleCheckIcon className="size-4" />
-        ),
-        info: (
-          <InfoIcon className="size-4" />
-        ),
-        warning: (
-          <TriangleAlertIcon className="size-4" />
-        ),
-        error: (
-          <OctagonXIcon className="size-4" />
-        ),
-        loading: (
-          <Loader2Icon className="size-4 animate-spin" />
-        ),
-      }}
-      style={
-        {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)",
-        } as React.CSSProperties
-      }
+      richColors={true}
       toastOptions={{
         classNames: {
-          toast: "cn-toast",
+          toast:
+            "group toast group-[.toaster]:bg-white/90 group-[.toaster]:dark:bg-slate-900/90 group-[.toaster]:backdrop-blur-xl group-[.toaster]:text-slate-900 group-[.toaster]:dark:text-white group-[.toaster]:border-slate-200/50 group-[.toaster]:dark:border-slate-800/50 group-[.toaster]:shadow-[0_8px_30px_rgb(0,0,0,0.12)] group-[.toaster]:rounded-2xl group-[.toaster]:font-semibold px-5 py-4",
+          description: "group-[.toast]:text-slate-500 group-[.toast]:dark:text-slate-400 font-medium",
+          actionButton:
+            "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground rounded-xl font-bold",
+          cancelButton:
+            "group-[.toast]:bg-slate-100 group-[.toast]:dark:bg-slate-800 group-[.toast]:text-slate-500 group-[.toast]:dark:text-slate-400 rounded-xl font-bold",
         },
       }}
       {...props}

@@ -88,6 +88,12 @@ function doPost(e) {
       case "create_pengeluaran":
         return createPengeluaran(payload);
 
+      case "update_pengeluaran":
+        return updatePengeluaran(payload);
+
+      case "delete_pengeluaran":
+        return deletePengeluaran(payload);
+
       case "create_settlement":
         return createSettlement(payload);
 

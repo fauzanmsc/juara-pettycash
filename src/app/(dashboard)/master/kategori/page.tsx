@@ -159,10 +159,12 @@ export default function MasterKategoriPage() {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="h-40 rounded-2xl" />
-          ))}
+        <div className="flex flex-col items-center justify-center h-64 gap-3">
+          <div className="relative w-10 h-10">
+            <div className="absolute inset-0 border-[3px] border-[#B2F082]/20 rounded-full"></div>
+            <div className="absolute inset-0 border-[3px] border-[#B2F082] rounded-full border-t-transparent animate-spin"></div>
+          </div>
+          <p className="text-sm text-slate-500 dark:text-slate-400 animate-pulse font-medium">Memuat data kategori...</p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -196,7 +198,7 @@ export default function MasterKategoriPage() {
                   value={formData.Nama_Kategori}
                   onChange={(e) => setFormData({...formData, Nama_Kategori: e.target.value})}
                   required
-                  className="rounded-2xl border-0 h-10 text-sm font-semibold text-slate-700 dark:text-white bg-white/50 dark:bg-slate-800/50 shadow-sm"
+                  className="rounded-2xl border border-slate-200 h-11 text-sm font-semibold text-slate-700 dark:text-white bg-white dark:bg-[#070D07] dark:border-slate-800 shadow-sm focus-visible:ring-primary transition-all"
                 />
               </div>
             </div>
@@ -249,10 +251,10 @@ export default function MasterKategoriPage() {
                       type="button"
                       onClick={() => setFormData({...formData, Icon: iconName})}
                       className={cn(
-                        "shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all",
+                        "shrink-0 w-11 h-11 rounded-xl flex items-center justify-center transition-all border",
                         isSelected 
-                          ? "shadow-lg text-white scale-105" 
-                          : "bg-white/50 dark:bg-slate-800/50 text-slate-500 hover:bg-white dark:hover:bg-slate-800 shadow-sm"
+                          ? "shadow-lg text-white scale-110 border-transparent" 
+                          : "bg-white dark:bg-[#070D07] border-slate-200 dark:border-slate-800 text-slate-500 hover:border-slate-300 dark:hover:border-slate-700 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-900"
                       )}
                       style={isSelected ? { backgroundColor: formData.Warna_Hex } : {}}
                     >
@@ -269,7 +271,7 @@ export default function MasterKategoriPage() {
                 <select 
                   value={formData.Status}
                   onChange={(e) => setFormData({...formData, Status: e.target.value})}
-                  className="w-full h-10 px-4 rounded-xl border-0 bg-white/50 dark:bg-slate-800/50 text-slate-700 dark:text-white font-bold text-sm outline-none shadow-sm"
+                  className="w-full h-11 px-4 rounded-2xl border border-slate-200 bg-white dark:bg-[#070D07] dark:border-slate-800 text-slate-700 dark:text-white font-bold text-sm outline-none shadow-sm focus:ring-2 focus:ring-primary transition-all"
                 >
                   <option value="Aktif">Aktif</option>
                   <option value="Nonaktif">Nonaktif</option>
@@ -280,7 +282,7 @@ export default function MasterKategoriPage() {
             <Button 
               type="submit" 
               disabled={createMutation.isPending || updateMutation.isPending} 
-              className="w-full rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-base h-11 shadow-md shadow-primary/20 transition-all border-0"
+              className="w-full rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-base h-12 shadow-lg shadow-primary/25 transition-all border-0 mt-2"
             >
               Simpan Kategori
             </Button>
