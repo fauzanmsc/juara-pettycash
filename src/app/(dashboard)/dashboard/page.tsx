@@ -103,7 +103,7 @@ export default function DashboardPage() {
     }
     return rawKategori.map((cat: any, idx: number) => ({
       ...cat,
-      color: COLORS[idx % COLORS.length]
+      color: cat.Warna_Hex || COLORS[idx % COLORS.length]
     }));
   }, [chartResponse]);
 

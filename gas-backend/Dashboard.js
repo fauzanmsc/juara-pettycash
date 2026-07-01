@@ -13,17 +13,17 @@ function getDashboardStats(userId, role) {
     const saldoSaatIni = saldoData.length > 0 ? saldoData[saldoData.length - 1].Saldo_Akhir : 0;
 
     // 2. Hitung Pengeluaran Bulan Ini
-    const pengeluaranData = getAllRecords(CONFIG.SHEETS.PENGELUARAN);
+    const transaksiData = getAllRecords(CONFIG.SHEETS.TRANSAKSI);
     let pengeluaranBulanIni = 0;
     
     // 3. Hitung Transaksi Bulan Ini
     let totalTransaksiBulanIni = 0;
 
-    pengeluaranData.forEach(exp => {
-      const expDate = new Date(exp.Tanggal_Transaksi);
+    transaksiData.forEach(trx => {
+      const expDate = new Date(trx.Tanggal_Transaksi);
       if (expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear) {
-        if (exp.Status !== 'Rejected') {
-          pengeluaranBulanIni += Number(exp.Nominal);
+        if (trx.Status !== 'Rejected' && trx.Tipe_Transaksi === 'Pengeluaran') {
+          pengeluaranBulanIni += Number(trx.Nominal);
         }
         totalTransaksiBulanIni++;
       }
@@ -58,32 +58,41 @@ function getDashboardStats(userId, role) {
 
 function getChartData() {
   try {
-    const pengeluaranData = getAllRecords(CONFIG.SHEETS.PENGELUARAN);
+    const transaksiData = getAllRecords(CONFIG.SHEETS.TRANSAKSI);
     const kategoriData = getAllRecords(CONFIG.SHEETS.KATEGORI);
     
-    // Map kategori ID ke Nama
+    // Map kategori ID ke Nama dan Warna_Hex
     const catMap = {};
-    kategoriData.forEach(c => catMap[c.ID_Kategori] = c.Nama_Kategori);
+    const colorMap = {};
+    kategoriData.forEach(c => {
+      catMap[c.ID_Kategori] = c.Nama_Kategori;
+      if (c.Warna_Hex) {
+        colorMap[c.Nama_Kategori] = c.Warna_Hex;
+      }
+    });
 
-    // Hitung per kategori
+    // Hitung per kategori (Hanya Pengeluaran)
     const summaryKategori = {};
-    pengeluaranData.forEach(exp => {
-       const catName = catMap[exp.ID_Kategori] || 'Lainnya';
-       if (!summaryKategori[catName]) summaryKategori[catName] = 0;
-       summaryKategori[catName] += Number(exp.Nominal);
+    transaksiData.forEach(trx => {
+       if (trx.Tipe_Transaksi === 'Pengeluaran') {
+         const catName = catMap[trx.ID_Kategori] || 'Lainnya';
+         if (!summaryKategori[catName]) summaryKategori[catName] = 0;
+         summaryKategori[catName] += Number(trx.Nominal);
+       }
     });
 
     const categoryChart = Object.keys(summaryKategori).map(k => ({
       name: k,
-      value: summaryKategori[k]
+      value: summaryKategori[k],
+      Warna_Hex: colorMap[k] || null
     }));
 
     // Data mentah untuk trend (agar frontend bisa filter Mingguan/Bulanan)
-    const rawTrend = pengeluaranData
-      .filter(exp => exp.Status !== 'Rejected' && exp.Status !== 'Ditolak')
-      .map(exp => ({
-        date: exp.Tanggal_Transaksi,
-        amount: Number(exp.Nominal)
+    const rawTrend = transaksiData
+      .filter(trx => trx.Status !== 'Rejected' && trx.Status !== 'Ditolak' && trx.Tipe_Transaksi === 'Pengeluaran')
+      .map(trx => ({
+        date: trx.Tanggal_Transaksi,
+        amount: Number(trx.Nominal)
       }));
 
     return respondSuccess({

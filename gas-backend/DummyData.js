@@ -8,10 +8,10 @@ function setupDatabase() {
   
   const tables = {
     [CONFIG.SHEETS.PENGGUNA]: ["ID_Pengguna", "Nama", "Email", "Password", "Jabatan", "Peran", "Divisi", "Status", "Tanggal_Dibuat", "Terakhir_Login", "Foto_Profil"],
-    [CONFIG.SHEETS.KATEGORI]: ["ID_Kategori", "Nama_Kategori", "Keterangan", "Status"],
+    [CONFIG.SHEETS.KATEGORI]: ["ID_Kategori", "Nama_Kategori", "Keterangan", "Status", "Warna_Hex", "Icon"],
     [CONFIG.SHEETS.PENGAJUAN]: ["ID_Pengajuan", "Nomor_Pengajuan", "Tanggal_Pengajuan", "ID_Pemohon", "Divisi", "ID_Kategori", "Keperluan", "Nominal_Pengajuan", "Status", "Catatan_Approval", "Tanggal_Dibuat", "Tanggal_Diupdate"],
     [CONFIG.SHEETS.PERSETUJUAN]: ["ID_Persetujuan", "Referensi_ID", "Jenis_Dokumen", "ID_Penyetuju", "Nama_Penyetuju", "Jabatan_Penyetuju", "Aksi", "Status_Sebelum", "Status_Sesudah", "Catatan", "Tanggal_Persetujuan"],
-    [CONFIG.SHEETS.PENGELUARAN]: ["ID_Pengeluaran", "Nomor_Transaksi", "Tanggal_Transaksi", "ID_Kategori", "Deskripsi", "Vendor", "Nominal", "Status", "ID_Pembuat", "Tanggal_Dibuat"],
+    [CONFIG.SHEETS.TRANSAKSI]: ["ID_Transaksi", "Nomor_Transaksi", "Tanggal_Transaksi", "Tipe_Transaksi", "ID_Kategori", "Deskripsi", "Pihak_Terkait", "Nominal", "Status", "ID_Pembuat", "Tanggal_Dibuat"],
     [CONFIG.SHEETS.SETTLEMENT]: ["ID_PJ", "Nomor_Settlement", "ID_Pengajuan", "Dana_Diterima", "Total_Pengeluaran", "Selisih", "Catatan", "Status", "Tanggal_Dibuat"],
     [CONFIG.SHEETS.DETAIL_SETTLEMENT]: ["ID_Detail", "ID_PJ", "Tanggal", "ID_Kategori", "Deskripsi", "Nominal"],
     [CONFIG.SHEETS.REPLENISHMENT]: ["ID_Replenishment", "Nomor_Replenishment", "Tanggal_Pengajuan", "Saldo_Saat_Ini", "Nominal_Pengisian", "Alasan", "Status", "Tanggal_Dibuat"],
@@ -43,12 +43,12 @@ function generateDummyData() {
   const kategoriSheet = ss.getSheetByName(CONFIG.SHEETS.KATEGORI);
   if (kategoriSheet.getLastRow() <= 1) {
     const dummyKategori = [
-      ["KAT-001", "Transportasi", "Biaya perjalanan, bensin, tol", "active"],
-      ["KAT-002", "Konsumsi", "Makan siang meeting, snack", "active"],
-      ["KAT-003", "ATK", "Alat Tulis Kantor", "active"],
-      ["KAT-004", "Operasional", "Biaya operasional umum", "active"],
-      ["KAT-005", "Maintenance", "Perawatan inventaris", "active"],
-      ["KAT-006", "Lain-lain", "Biaya tidak terduga", "active"]
+      ["KAT-001", "Transportasi", "Biaya perjalanan, bensin, tol", "active", "#3b82f6", "Car"],
+      ["KAT-002", "Konsumsi", "Makan siang meeting, snack", "active", "#ef4444", "Pizza"],
+      ["KAT-003", "ATK", "Alat Tulis Kantor", "active", "#eab308", "Scissors"],
+      ["KAT-004", "Operasional", "Biaya operasional umum", "active", "#8b5cf6", "Monitor"],
+      ["KAT-005", "Maintenance", "Perawatan inventaris", "active", "#10b981", "Scissors"],
+      ["KAT-006", "Lain-lain", "Biaya tidak terduga", "active", "#6366f1", "Tags"]
     ];
     kategoriSheet.getRange(2, 1, dummyKategori.length, dummyKategori[0].length).setValues(dummyKategori);
   }

@@ -13,18 +13,18 @@ const CONFIG = {
   // Nama Sheet di Database
   SHEETS: {
     PENGGUNA: "Pengguna",
-    KATEGORI: "Kategori_Pengeluaran",
-    PENGAJUAN: "Pengajuan_Dana",
+    KATEGORI: "Kategori",
+    PENGAJUAN: "Pengajuan",
     PERSETUJUAN: "Persetujuan",
-    PENGELUARAN: "Pengeluaran_Kas_Kecil",
-    SETTLEMENT: "Pertanggungjawaban",
-    DETAIL_SETTLEMENT: "Detail_Pertanggungjawaban",
+    TRANSAKSI: "Transaksi",
+    SETTLEMENT: "Settlement",
+    DETAIL_SETTLEMENT: "Detail",
     REPLENISHMENT: "Replenishment",
-    SALDO: "Saldo_Kas_Kecil",
-    LAMPIRAN: "Lampiran_Dokumen",
+    SALDO: "Saldo",
+    LAMPIRAN: "Lampiran",
     NOTIFIKASI: "Notifikasi",
-    LOG_AKTIVITAS: "Log_Aktivitas",
-    PENGATURAN: "Pengaturan_Sistem"
+    LOG_AKTIVITAS: "Log",
+    PENGATURAN: "Pengaturan"
   },
 
   // Pengaturan Default (akan ditimpa oleh data dari sheet Pengaturan_Sistem jika ada)

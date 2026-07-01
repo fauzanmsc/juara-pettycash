@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from "@/components/ui/dropdown-menu";
-import { LayoutDashboard, Receipt, FileText, RefreshCw, CheckSquare, Settings, LogOut, Menu, Bell, Search, History, HelpCircle, Wallet, Tags } from "lucide-react";
+import { LayoutDashboard, Receipt, FileText, RefreshCw, CheckSquare, Settings, LogOut, Menu, Bell, Search, History, HelpCircle, Wallet, Tags, Banknote, ArrowLeftRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -19,13 +19,14 @@ import { CommandMenu } from "@/components/CommandMenu";
 
 const menuItems = [
   { icon: FileText, label: "Pengajuan Dana", href: "/pengajuan" },
-  { icon: Receipt, label: "Pengeluaran", href: "/pengeluaran" },
+  { icon: ArrowLeftRight, label: "Transaksi Kas", href: "/transaksi" },
   { icon: CheckSquare, label: "Settlement", href: "/settlement" },
   { icon: RefreshCw, label: "Replenishment", href: "/replenishment" },
   { icon: CheckSquare, label: "Approval", href: "/approval", badge: 12 },
 ];
 
 const secondaryMenuItems = [
+  { icon: Wallet, label: "Jurnal Keuangan", href: "/jurnal" },
   { icon: Tags, label: "Master Kategori", href: "/master/kategori" },
   { icon: History, label: "Audit Trail", href: "/audit" },
   { icon: Settings, label: "Pengaturan", href: "/pengaturan" },

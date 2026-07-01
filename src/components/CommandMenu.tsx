@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { Search, LayoutDashboard, Receipt, FileText, CheckSquare, RefreshCw, Settings, History, Tags } from "lucide-react"
+import { Search, LayoutDashboard, Receipt, FileText, CheckSquare, RefreshCw, Settings, History, Tags, Wallet, ArrowLeftRight } from "lucide-react"
 
 import {
   Command,
@@ -71,9 +71,9 @@ export function CommandMenu() {
                 <FileText className="mr-3 h-5 w-5 text-slate-400" />
                 <span className="text-[15px] font-medium">Pengajuan Dana</span>
               </CommandItem>
-              <CommandItem onSelect={() => runCommand(() => router.push("/pengeluaran"))} className="rounded-xl px-4 py-3 cursor-pointer">
-                <Receipt className="mr-3 h-5 w-5 text-slate-400" />
-                <span className="text-[15px] font-medium">Pengeluaran</span>
+              <CommandItem onSelect={() => runCommand(() => router.push("/transaksi"))} className="rounded-xl px-4 py-3 cursor-pointer">
+                <ArrowLeftRight className="mr-3 h-5 w-5 text-slate-400" />
+                <span className="text-[15px] font-medium">Transaksi Kas</span>
               </CommandItem>
               <CommandItem onSelect={() => runCommand(() => router.push("/settlement"))} className="rounded-xl px-4 py-3 cursor-pointer">
                 <CheckSquare className="mr-3 h-5 w-5 text-slate-400" />
@@ -93,6 +93,10 @@ export function CommandMenu() {
               <CommandItem onSelect={() => runCommand(() => router.push("/dashboard"))} className="rounded-xl px-4 py-3 cursor-pointer">
                 <LayoutDashboard className="mr-3 h-5 w-5 text-slate-400" />
                 <span className="text-[15px] font-medium">Dashboard Utama</span>
+              </CommandItem>
+              <CommandItem onSelect={() => runCommand(() => router.push("/jurnal"))} className="rounded-xl px-4 py-3 cursor-pointer">
+                <Wallet className="mr-3 h-5 w-5 text-slate-400" />
+                <span className="text-[15px] font-medium">Jurnal Keuangan</span>
               </CommandItem>
               <CommandItem onSelect={() => runCommand(() => router.push("/master/kategori"))} className="rounded-xl px-4 py-3 cursor-pointer">
                 <Tags className="mr-3 h-5 w-5 text-slate-400" />

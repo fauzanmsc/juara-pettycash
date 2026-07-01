@@ -41,23 +41,26 @@ function doGet(e) {
       case "get_pengajuan":
         return getPengajuanList(userId, role);
 
-      case "get_pengeluaran":
-        return getPengeluaranList();
+      case "get_transaksi":
+        return getTransaksiList();
 
-      case "get_settlement":
-        return getSettlementList();
+      case "get_kategori":
+        return getKategoriList();
 
       case "get_replenishment":
         return getReplenishmentList();
 
-      case "get_kategori":
-        return getKategori();
-
-      case "get_logs":
+      case "get_settlement":
+        return getSettlementList();
+        
+      case "get_log_aktivitas":
         return respondSuccess(getAllRecords(CONFIG.SHEETS.LOG_AKTIVITAS));
 
       case "get_settings":
         return getSettings();
+
+      case "get_jurnal":
+        return getJurnal();
 
       default:
         return respondError("Action GET tidak ditemukan", "INVALID_ACTION");
@@ -82,17 +85,17 @@ function doPost(e) {
       case "login":
         return validateUser(payload.email, payload.password);
 
+      case "create_transaksi":
+        return createTransaksi(payload);
+
+      case "update_transaksi":
+        return updateTransaksi(payload);
+
+      case "delete_transaksi":
+        return deleteTransaksi(payload);
+
       case "create_pengajuan":
         return createPengajuan(payload);
-
-      case "create_pengeluaran":
-        return createPengeluaran(payload);
-
-      case "update_pengeluaran":
-        return updatePengeluaran(payload);
-
-      case "delete_pengeluaran":
-        return deletePengeluaran(payload);
 
       case "create_settlement":
         return createSettlement(payload);
