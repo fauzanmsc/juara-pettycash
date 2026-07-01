@@ -26,6 +26,7 @@ const handler = NextAuth({
           });
 
           const response = await res.json();
+          console.log("=== GAS LOGIN RESPONSE ===", JSON.stringify(response, null, 2));
 
           if (response.success && response.data) {
             const user = response.data;
@@ -40,7 +41,7 @@ const handler = NextAuth({
               image: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`
             } as any;
           } else {
-            console.error("Login failed:", response.error?.message);
+            console.error("Login failed (from GAS):", response.error?.message, response);
             return null;
           }
         } catch (error) {
